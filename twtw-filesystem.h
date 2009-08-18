@@ -26,7 +26,7 @@
 #ifndef _TWTW_FILESYS_H_
 #define _TWTW_FILESYS_H_ 
 
-#include <glib.h>
+#include "twtw-glib.h"
 #include <stdio.h>
 
 
@@ -37,6 +37,7 @@ extern "C" {
 #endif
 
 void twtw_filesys_generate_temp_dir_path_for_book (gint32 serialNo, char **outPath, size_t *outPathLen);
+void twtw_filesys_generate_temp_path_for_single_file (char **outPath, size_t *outPathLen);
 
 // path can be a directory or a single file
 void twtw_filesys_clean_temp_files_at_path (const char *path, size_t pathLen);
@@ -48,6 +49,12 @@ FILE *twtw_open_writeb_utf8(const char *path, size_t pathLen);
 
 // path string util (so that the app doesn't need to know the system path component separator)
 char *twtw_filesys_append_path_component (const char *basePath, const char *str);
+
+// generating temp file copies (used by sound undo)
+gboolean twtw_filesys_make_uniquely_named_copy_of_file_at_path (const char *path, size_t pathLen,
+                                                                char **outPath, size_t *outPathLen);
+
+gboolean twtw_filesys_copy_file (const char *sourcePath, size_t sourcePathLen, const char *dstPath, size_t dstPathLen, gboolean allowReplace);
 
 #ifdef __cplusplus
 }

@@ -28,18 +28,38 @@
 #import <stdio.h>
 
 
-void twtw_filesys_generate_temp_dir_path_for_book (gint32 serialNo, char **outPath, size_t *outPathLen)
+static NSString *nsTempPath()
 {
-    g_return_if_fail (outPath && outPathLen);
-
-    NSString *tempPath = NSTemporaryDirectory();  //@"/tmp/";
+    NSString *tempPath = nil; //NSTemporaryDirectory();
     
     if ([tempPath length] < 1)
         tempPath = @"/tmp/";
     else if ([tempPath characterAtIndex:[tempPath length]-1] != '/')
         tempPath = [tempPath stringByAppendingString:@"/"];
+        
+    return tempPath;
+}
+
+extern gint32 twtw_serialno_new();
+
+
+void twtw_filesys_generate_temp_path_for_single_file (char **outPath, size_t *outPathLen)
+{
+    gint32 serialno = twtw_serialno_new();
+    NSString *tempPath = [NSString stringWithFormat:@"%@twentytwenty/tempfile_%i", nsTempPath(), serialno];
+
+    const char *utf8Path = [tempPath UTF8String];
     
-    tempPath = [NSString stringWithFormat:@"%@twentytwenty/book_%i/", tempPath, serialNo];
+    *outPath = g_strdup(utf8Path);
+    *outPathLen = strlen(utf8Path);
+}
+
+
+void twtw_filesys_generate_temp_dir_path_for_book (gint32 serialNo, char **outPath, size_t *outPathLen)
+{
+    g_return_if_fail (outPath && outPathLen);
+
+    NSString *tempPath = [NSString stringWithFormat:@"%@twentytwenty/book_%i/", nsTempPath(), serialNo];
     
     const char *utf8Path = [tempPath UTF8String];
     size_t utf8Len = strlen(utf8Path);
@@ -49,7 +69,7 @@ void twtw_filesys_generate_temp_dir_path_for_book (gint32 serialNo, char **outPa
     
     memcpy(*outPath, utf8Path, utf8Len);
     
-    ///NSLog(@"%s: book serial is %i -\n  -> temp path '%@'", __func__, serialNo, tempPath);
+    NSLog(@"%s: book serial is %i -\n  -> temp path '%@'", __func__, serialNo, tempPath);
     
     
     // create the directory
@@ -62,6 +82,10 @@ void twtw_filesys_generate_temp_dir_path_for_book (gint32 serialNo, char **outPa
     NSError *error = nil;
     if ( ![fileManager createDirectoryAtPath:tempPath withIntermediateDirectories:YES attributes:nil error:&error]) {  // Leopard / 10.5 API
         NSLog(@"*** unable to create temp directory at path '%@':\n    error %@", tempPath, error);
+    } else {
+        if ( ![fileManager fileExistsAtPath:tempPath]) {
+            NSLog(@"*** temp path was not created at: %@", tempPath);
+        }
     }
 }
 
@@ -77,7 +101,7 @@ void twtw_filesys_clean_temp_files_at_path (const char *path, size_t pathLen)
     if ([fileManager fileExistsAtPath:tempPath isDirectory:&isDir]) {
         [fileManager removeItemAtPath:tempPath error:NULL];  // Leopard / 10.5 API        
     }
-    ///NSLog(@"%s: cleaning path %@", __func__, tempPath);
+    NSLog(@"%s: cleaned path %@", __func__, tempPath);
 }
 
 size_t twtw_filesys_get_file_size_utf8 (const char *path, size_t pathLen, gboolean *outIsValidFile)
@@ -137,5 +161,66 @@ char *twtw_filesys_append_path_component (const char *basePath, const char *comp
     return newPath;
 }
 
+
+gboolean twtw_filesys_make_uniquely_named_copy_of_file_at_path (const char *pathUTF8, size_t pathLenUTF8,
+                                                                char **outPathUTF8, size_t *outPathLen)
+{
+    g_return_val_if_fail (pathUTF8, FALSE);
+    g_return_val_if_fail (outPathUTF8, FALSE);
+    
+    NSString *path = [NSString stringWithUTF8String:pathUTF8];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if ( ![fileManager fileExistsAtPath:path]) {
+        return FALSE;
+    }
+    
+    NSString *newPath;
+    gint32 serialno = twtw_serialno_new();
+    
+    do {
+        newPath = [NSString stringWithFormat:@"%@__tempcopy_%i__.%@", [path stringByDeletingPathExtension], serialno, [path pathExtension]];
+        serialno++;
+    }
+    while ([fileManager fileExistsAtPath:newPath]);
+    
+    // Leopard / 10.5 API
+    NSError *err = nil;
+    BOOL didCopy = [fileManager copyItemAtPath:path toPath:newPath error:&err];
+    if ( !didCopy) {
+        NSLog(@"*** %s: failed with error %@  (src file '%@', dst file '%@')", __func__, err, path, newPath);
+    }
+    else {
+        *outPathUTF8 = g_strdup([newPath UTF8String]);
+        
+        if (outPathLen) *outPathLen = strlen(*outPathUTF8);
+    }
+    
+    return (didCopy) ? TRUE : FALSE;
+}
+
+
+gboolean twtw_filesys_copy_file (const char *sourcePathUTF8, size_t sourcePathLen, const char *dstPathUTF8, size_t dstPathLen, gboolean allowReplace)
+{
+    NSString *srcPath = [NSString stringWithUTF8String:sourcePathUTF8];
+    NSString *dstPath = [NSString stringWithUTF8String:dstPathUTF8];
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if (allowReplace) {
+        BOOL isDir = NO;
+        if ([fileManager fileExistsAtPath:dstPath isDirectory:&isDir] && !isDir) {
+            [fileManager removeItemAtPath:dstPath error:NULL];
+        }
+    }
+    
+    // Leopard / 10.5 API
+    NSError *err = nil;
+    BOOL didCopy = [fileManager copyItemAtPath:srcPath toPath:dstPath error:&err];
+    if ( !didCopy) {
+        NSLog(@"*** %s: failed with error %@  (src file '%@', dst file '%@')", __func__, err, srcPath, dstPath);
+    }
+    return (didCopy) ? TRUE : FALSE;
+}
 
 

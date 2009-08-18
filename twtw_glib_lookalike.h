@@ -42,6 +42,22 @@ typedef void * gpointer;
 
 typedef unsigned long gsize;
 
+#include <stdint.h>
+typedef int8_t gint8;
+typedef int16_t gint16;
+typedef int32_t gint32;
+typedef uint8_t guint8;
+typedef uint16_t guint16;
+typedef uint32_t guint32;
+
+#ifndef	FALSE
+#define	FALSE	(0)
+#endif
+
+#ifndef	TRUE
+#define	TRUE	(!FALSE)
+#endif
+
 #define G_GNUC_MALLOC    __attribute__((__malloc__))
 
 #endif

@@ -38,6 +38,7 @@ typedef int32_t TwtwFixedNum;
 
 // decimal part size in bits
 #define FIXD_Q   16
+#define FIXD_1   65536
 
 #define FIXD_ONE            ((int32_t) 65536)
 #define FIXD_ONE_FLOAT      ((float)   65536.0f)
@@ -108,7 +109,8 @@ TWTWINLINE TwtwFixedNum twtw_fixed_qmul (TwtwFixedNum a, TwtwFixedNum b)
               : "%r"(a), "r"(b));
     return (TwtwFixedNum)res;
     
-#elif defined(__arm__)
+#elif defined(__arm__) && !defined(__APPLE__)
+    // 2009.07.20 - this inline asm doesn't compile on iPhone SDK
     int res, temp1;
     __asm__("smull %0, %1, %2, %3     \n"
             "mov   %0, %0,     lsr %4 \n"

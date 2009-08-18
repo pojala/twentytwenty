@@ -26,7 +26,7 @@
 #ifndef _TWTW_DOCUMENT_H_
 #define _TWTW_DOCUMENT_H_
 
-#include <glib.h>
+#include "twtw-glib.h"
 #include "twtw-curves.h"
 #include "twtw-photo.h"
 
@@ -65,10 +65,10 @@ typedef struct _TwtwPageThumb {
 } TwtwPageThumb;
 
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 // ---- application defaults ----
 unsigned char *twtw_default_color_palette_rgb_array (gint *outNumEntries);
@@ -101,11 +101,18 @@ gint32 twtw_book_regen_serialno (TwtwBook *book);
 gint twtw_book_create_from_path_utf8 (const char *path, size_t pathLen, TwtwBook **outBook);
 gint twtw_book_write_to_path_utf8 (TwtwBook *book, const char *path, size_t pathLen);
 
+gint twtw_book_create_from_data (const char *data, size_t dataLen, TwtwBook **outBook);
+gint twtw_book_write_to_data (TwtwBook *book, char **outData, size_t *outDataLen);
+
+// book's file cache
 void twtw_book_clean_temp_files (TwtwBook *book);
 
 // page access
 gint twtw_book_get_page_count (TwtwBook *book);
 TwtwPage *twtw_book_get_page (TwtwBook *book, gint index);
+gboolean twtw_book_page_has_content (TwtwBook *book, gint index);
+gint twtw_book_get_index_of_last_page_with_content (TwtwBook *book);
+gint twtw_book_get_total_sound_duration (TwtwBook *book);
 
 // metadata
 const char *twtw_book_get_author (TwtwBook *book);
@@ -132,6 +139,9 @@ TwtwCurveList *twtw_page_get_curve (TwtwPage *page, gint index);
 void twtw_page_add_curve (TwtwPage *page, TwtwCurveList *curve);
 void twtw_page_delete_curve_at_index (TwtwPage *page, gint index);
 
+TwtwCurveList **twtw_page_copy_all_curves (TwtwPage *page);  // returned array's size given by twtw_page_get_curves_count()
+void twtw_page_replace_curves_copy (TwtwPage *page, gint count, TwtwCurveList **array);
+
 // audio
 gint twtw_page_get_sound_duration_in_seconds (TwtwPage *page);
 
@@ -144,7 +154,7 @@ const char *twtw_page_get_temp_path_for_pcm_sound_utf8 (TwtwPage *page);
 
 // photo
 TwtwYUVImage *twtw_page_get_yuv_photo (TwtwPage *page);
-void twtw_page_copy_yuv_photo (TwtwPage *page, TwtwYUVImage *photo);
+void twtw_page_set_yuv_photo_copy (TwtwPage *page, TwtwYUVImage *photo);
 
 // thumbnail
 TwtwPageThumb *twtw_page_get_thumb (TwtwPage *page);
@@ -153,6 +163,15 @@ void twtw_page_invalidate_thumb (TwtwPage *page);
 // state during editing
 void twtw_page_attach_edit_data (TwtwPage *page, gpointer data);
 gpointer twtw_page_get_edit_data (TwtwPage *page);
+
+
+// a page's curve array and a destructor (this datatype is needed for undo of "clear all curves")
+typedef struct _TwtwCurveListArray {
+    gint count;
+    TwtwCurveList **array;
+} TwtwCurveListArray;
+
+void twtw_destroy_curvelist_array (TwtwCurveListArray *array);
 
 
 #ifdef __cplusplus

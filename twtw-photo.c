@@ -59,6 +59,22 @@ void twtw_yuv_image_destroy (TwtwYUVImage *image)
     g_free(image);
 }
 
+TwtwYUVImage *twtw_yuv_image_copy (TwtwYUVImage *photo)
+{
+    if ( !photo) return NULL;
+
+    TwtwYUVImage *newimg = g_malloc0(sizeof(TwtwYUVImage));
+    newimg->w = photo->w;
+    newimg->h = photo->h;
+    newimg->rowBytes = photo->rowBytes;
+    newimg->pixelFormat = photo->pixelFormat;
+    newimg->buffer = g_malloc(newimg->rowBytes * newimg->h);
+    
+    if (photo->buffer)
+        memcpy(newimg->buffer, photo->buffer, newimg->rowBytes * newimg->h);
+            
+    return newimg;
+}
 
 
 #ifndef FIXD_255
@@ -317,7 +333,7 @@ void twtw_yuv_image_serialize (TwtwYUVImage *image, unsigned char **outData, siz
     const int ch = yh / 2;
 
     // chroma data will be truncated
-    const int chromaBits = 4;
+    const int chromaBits = 5;
     const int cTruncRowBytes = (chromaBits * cw) / 8;
     const int cTruncSize = cTruncRowBytes * ch;
 
@@ -374,21 +390,62 @@ void twtw_yuv_image_serialize (TwtwYUVImage *image, unsigned char **outData, siz
     unsigned char * RESTRICT cbTruncBuf = planarBuf + (yw * yh);
     unsigned char * RESTRICT crTruncBuf = cbTruncBuf + cTruncSize;
     
-    unsigned int ns = 0, nd;
-    for (nd = 0; nd < cTruncSize; nd++) {
-        unsigned int cb1 = 7 + cbPlane[ns];   // add an offset to prevent e.g. a value of 127 rounding wrong way
-        unsigned int cb2 = 7 + cbPlane[ns+1];        
-        unsigned int cr1 = 7 + crPlane[ns];
-        unsigned int cr2 = 7 + crPlane[ns+1];
+    unsigned int ns = 0, nd = 0;
+    while (nd < cTruncSize) {
+        // this code did 4-bit truncation (2 values -> 1 byte)
+        /*
+        const unsigned int cOffset = 7;
+        unsigned int cb1 = cOffset + cbPlane[ns];   // add an offset to prevent e.g. a value of 127 rounding wrong way
+        unsigned int cb2 = cOffset + cbPlane[ns+1];        
+        unsigned int cr1 = cOffset + crPlane[ns];
+        unsigned int cr2 = cOffset + crPlane[ns+1];
         ns += 2;
         
-        unsigned int cbTrunc = (cb1 & 0xf0) | (cb2 >> 4);
-        unsigned int crTrunc = (cr1 & 0xf0) | (cr2 >> 4);
+        unsigned int cbPack = (cb1 & 0xf0) | (cb2 >> 4);
+        unsigned int crPack = (cr1 & 0xf0) | (cr2 >> 4);
         
-        cbTruncBuf[nd] = (cbTrunc & 0xff);
-        crTruncBuf[nd] = (crTrunc & 0xff);
+        cbTruncBuf[nd] = (cbPack & 0xff);
+        crTruncBuf[nd] = (crPack & 0xff);
+        nd++;
         
         //if (nd < cTruncRowBytes)  printf("%i: cb %x (%u, %u) / cb %x (%u, %u)\n", nd, cbTrunc, cb1, cb2, crTrunc, cr1, cr2);
+        */
+        // this code does 5-bit truncation (8 values -> 5 bytes)
+        const unsigned int cOffset = 4;
+        #define TRUNC(c_)  (((c_) >> 3) & 0x1f)
+        
+        unsigned int cb1 = cOffset + cbPlane[ns];
+        unsigned int cb2 = cOffset + cbPlane[ns+1];
+        unsigned int cb3 = cOffset + cbPlane[ns+2];
+        unsigned int cb4 = cOffset + cbPlane[ns+3];
+        unsigned int cb5 = cOffset + cbPlane[ns+4];
+        unsigned int cb6 = cOffset + cbPlane[ns+5];
+        unsigned int cb7 = cOffset + cbPlane[ns+6];
+        unsigned int cb8 = cOffset + cbPlane[ns+7];
+        
+        unsigned int cr1 = cOffset + crPlane[ns];
+        unsigned int cr2 = cOffset + crPlane[ns+1];
+        unsigned int cr3 = cOffset + crPlane[ns+2];
+        unsigned int cr4 = cOffset + crPlane[ns+3];
+        unsigned int cr5 = cOffset + crPlane[ns+4];
+        unsigned int cr6 = cOffset + crPlane[ns+5];
+        unsigned int cr7 = cOffset + crPlane[ns+6];
+        unsigned int cr8 = cOffset + crPlane[ns+7];
+        ns += 8;
+        
+        cbTruncBuf[nd+0] = (TRUNC(cb1) << 3) | (TRUNC(cb2) >> 2);
+        cbTruncBuf[nd+1] = (TRUNC(cb2) << 6) | (TRUNC(cb3) << 1) | (TRUNC(cb4) >> 4);
+        cbTruncBuf[nd+2] = (TRUNC(cb4) << 4) | (TRUNC(cb5) >> 1);
+        cbTruncBuf[nd+3] = (TRUNC(cb5) << 7) | (TRUNC(cb6) << 2) | (TRUNC(cb7) >> 3);
+        cbTruncBuf[nd+4] = (TRUNC(cb7) << 5) | (TRUNC(cb8));
+
+        crTruncBuf[nd+0] = (TRUNC(cr1) << 3) | (TRUNC(cr2) >> 2);
+        crTruncBuf[nd+1] = (TRUNC(cr2) << 6) | (TRUNC(cr3) << 1) | (TRUNC(cr4) >> 4);
+        crTruncBuf[nd+2] = (TRUNC(cr4) << 4) | (TRUNC(cr5) >> 1);
+        crTruncBuf[nd+3] = (TRUNC(cr5) << 7) | (TRUNC(cr6) << 2) | (TRUNC(cr7) >> 3);
+        crTruncBuf[nd+4] = (TRUNC(cr7) << 5) | (TRUNC(cr8));
+        nd += 5;
+        #undef TRUNC
     }
     }
     
@@ -413,13 +470,24 @@ void twtw_yuv_image_serialize (TwtwYUVImage *image, unsigned char **outData, siz
 }
 
 
+// previous (spring 2009) format with only 4 bits for each chroma channel.
+// replaced with 'twYb' that has 5-bit chroma.
+#define TWTW_CAM_COMPRESSED_4BITCHROMA_FOURCC          MAKE_FOURCC_LE('t', 'w', 'Y', 'Z')
+
+// full 8-bit chroma is also supported, although the client doesn't write it currently.
+#define TWTW_CAM_COMPRESSED_8BITCHROMA_FOURCC          MAKE_FOURCC_LE('t', 'w', 'Y', 'c')
+
+
+
 TwtwYUVImage *twtw_yuv_image_create_from_serialized (unsigned char *deflatedData, size_t deflatedDataSize, int w, int h, uint32_t dataFourCC, size_t origDataSize)
 {
     if ( !deflatedData || deflatedDataSize < 1) return NULL;
     if (w < 1 || h < 1) return NULL;
     
-    if (dataFourCC != TWTW_CAM_COMPRESSED_FOURCC) {
-        printf("*** %s: unsupported fourCC (%x)", __func__, dataFourCC);
+    if (dataFourCC != TWTW_CAM_COMPRESSED_FOURCC && dataFourCC != TWTW_CAM_COMPRESSED_4BITCHROMA_FOURCC && dataFourCC != TWTW_CAM_COMPRESSED_8BITCHROMA_FOURCC) {
+        char s[5] = "____";
+        memcpy(s, (char *)(&dataFourCC), 4);
+        printf("*** %s: unsupported fourCC: '%s'\n", __func__, s);
         return NULL;
     }
     
@@ -429,15 +497,16 @@ TwtwYUVImage *twtw_yuv_image_create_from_serialized (unsigned char *deflatedData
     size_t inflatedSize = 0;
     twtw_inflate(deflatedData, deflatedDataSize,  infData, infDataAvailSize,  &inflatedSize);
     
-    printf("did inflate photo: %i -> %i, size %i * %i px, fourCC is %x\n", deflatedDataSize, inflatedSize, w, h, dataFourCC);
+    printf("did inflate photo: %i -> %i, size %i * %i px, fourCC is 0x%x\n", deflatedDataSize, inflatedSize, w, h, dataFourCC);
 
     const unsigned int yw = w;
     const unsigned int yh = h;
     const unsigned int cw = yw / 2;
     const unsigned int ch = yh / 2;
 
-    // chroma data will be truncated
-    const unsigned int chromaBits = 4;
+    // chroma data is truncated
+    const unsigned int chromaBits = (dataFourCC == TWTW_CAM_COMPRESSED_FOURCC) ? 5 
+                                               : ((dataFourCC == TWTW_CAM_COMPRESSED_4BITCHROMA_FOURCC) ? 4 : 8);
     const unsigned int cTruncRowBytes = (chromaBits * cw) / 8;
     const unsigned int cTruncSize = cTruncRowBytes * ch;
     
@@ -448,21 +517,121 @@ TwtwYUVImage *twtw_yuv_image_create_from_serialized (unsigned char *deflatedData
     unsigned char *cbTruncBuf = yPlane + (yw * yh);
     unsigned char *crTruncBuf = cbTruncBuf + cTruncSize;
 
+    // expand truncated chroma back to 8-bit
+    unsigned char *cbPlane = g_malloc(cw * ch);
+    unsigned char *crPlane = g_malloc(cw * ch);
+    {
+    unsigned int ns = 0, nd = 0;
+        
+    if (dataFourCC == TWTW_CAM_COMPRESSED_8BITCHROMA_FOURCC) {
+        memcpy(cbPlane, cbTruncBuf, cTruncSize);
+        memcpy(crPlane, crTruncBuf, cTruncSize);
+    } else if (dataFourCC == TWTW_CAM_COMPRESSED_4BITCHROMA_FOURCC) {
+        while (ns < cTruncSize) {
+            unsigned int cbPacked = cbTruncBuf[ns];
+            unsigned int crPacked = crTruncBuf[ns];
+            ns++;
+            
+            cbPlane[nd+0] = (cbPacked & 0xf0);
+            cbPlane[nd+1] = (cbPacked & 0x0f) << 4;
+            crPlane[nd+0] = (crPacked & 0xf0);
+            crPlane[nd+1] = (crPacked & 0x0f) << 4;
+            nd += 2;
+        }
+    } else {
+        while (ns < cTruncSize) {
+            unsigned int cbPacked1 = cbTruncBuf[ns];
+            unsigned int cbPacked2 = cbTruncBuf[ns+1];
+            unsigned int cbPacked3 = cbTruncBuf[ns+2];
+            unsigned int cbPacked4 = cbTruncBuf[ns+3];
+            unsigned int cbPacked5 = cbTruncBuf[ns+4];
+
+            unsigned int crPacked1 = crTruncBuf[ns];
+            unsigned int crPacked2 = crTruncBuf[ns+1];
+            unsigned int crPacked3 = crTruncBuf[ns+2];
+            unsigned int crPacked4 = crTruncBuf[ns+3];
+            unsigned int crPacked5 = crTruncBuf[ns+4];
+            ns += 5;
+
+            unsigned int cb1 = (cbPacked1 >> 3)  & 0x1f;
+            unsigned int cb2 = ((cbPacked1 << 2) | ((cbPacked2 >> 6) & 3))  & 0x1f;
+            unsigned int cb3 = (cbPacked2 >> 1)  & 0x1f;
+            unsigned int cb4 = ((cbPacked2 << 4) | ((cbPacked3 >> 4) & 15))  & 0x1f;
+            unsigned int cb5 = ((cbPacked3 << 1) | ((cbPacked4 >> 7) & 1))   & 0x1f;
+            unsigned int cb6 = (cbPacked4 >> 2)  & 0x1f;
+            unsigned int cb7 = ((cbPacked4 << 3) | ((cbPacked5 >> 5) & 7))   & 0x1f;
+            unsigned int cb8 = (cbPacked5)  & 0x1f;
+            cbPlane[nd+0] = cb1 << 3;
+            cbPlane[nd+1] = cb2 << 3;
+            cbPlane[nd+2] = cb3 << 3;
+            cbPlane[nd+3] = cb4 << 3;
+            cbPlane[nd+4] = cb5 << 3;
+            cbPlane[nd+5] = cb6 << 3;
+            cbPlane[nd+6] = cb7 << 3;
+            cbPlane[nd+7] = cb8 << 3;
+
+            unsigned int cr1 = (crPacked1 >> 3)  & 0x1f;
+            unsigned int cr2 = ((crPacked1 << 2) | ((crPacked2 >> 6) & 3))  & 0x1f;
+            unsigned int cr3 = (crPacked2 >> 1)  & 0x1f;
+            unsigned int cr4 = ((crPacked2 << 4) | ((crPacked3 >> 4) & 15))  & 0x1f;
+            unsigned int cr5 = ((crPacked3 << 1) | ((crPacked4 >> 7) & 1))   & 0x1f;
+            unsigned int cr6 = (crPacked4 >> 2)  & 0x1f;
+            unsigned int cr7 = ((crPacked4 << 3) | ((crPacked5 >> 5) & 7))   & 0x1f;
+            unsigned int cr8 = (crPacked5)  & 0x1f;
+            crPlane[nd+0] = cr1 << 3;
+            crPlane[nd+1] = cr2 << 3;
+            crPlane[nd+2] = cr3 << 3;
+            crPlane[nd+3] = cr4 << 3;
+            crPlane[nd+4] = cr5 << 3;
+            crPlane[nd+5] = cr6 << 3;
+            crPlane[nd+6] = cr7 << 3;
+            crPlane[nd+7] = cr8 << 3;
+            nd += 8;
+        }
+    }
+    }
+    
+
     size_t uyvyRowBytes = w * 2;
     unsigned char *uyvyBuf = g_malloc(uyvyRowBytes * h);
     
     unsigned int x, y;
+    
     for (y = 0; y < h; y++) {
         unsigned char * RESTRICT dst = uyvyBuf + uyvyRowBytes*y;
         unsigned char * RESTRICT src_y = yPlane + yw*y;
-        unsigned char * RESTRICT src_cb = cbTruncBuf + cTruncRowBytes*(y >> 1);
-        unsigned char * RESTRICT src_cr = crTruncBuf + cTruncRowBytes*(y >> 1);
+        ///unsigned char * RESTRICT src_cb = cbTruncBuf + cTruncRowBytes*(y >> 1);  <<-- algorithm for 4-bit trunc (didn't look good)
+        ///unsigned char * RESTRICT src_cr = crTruncBuf + cTruncRowBytes*(y >> 1);
+        unsigned char * RESTRICT src_cb = cbPlane + cw*(y >> 1);
+        unsigned char * RESTRICT src_cr = crPlane + cw*(y >> 1);
         
         if ((y & 1) == 1 && y < (h-1)) {
             // interpolate chroma samples for even rows
-            unsigned char * RESTRICT src_cb_next = src_cb + cTruncRowBytes;
-            unsigned char * RESTRICT src_cr_next = src_cr + cTruncRowBytes;
-            
+            unsigned char * RESTRICT src_cb_next = src_cb + cw; //cTruncRowBytes;
+            unsigned char * RESTRICT src_cr_next = src_cr + cw; //cTruncRowBytes;
+
+            for (x = 0; x < cw; x++) {
+                unsigned int cb = *src_cb;
+                unsigned int cr = *src_cr;
+                unsigned int cb_next = *src_cb_next;
+                unsigned int cr_next = *src_cr_next;
+                src_cb++;
+                src_cr++;
+                src_cb_next++;
+                src_cr_next++;
+                
+                cb = (cb + cb_next) >> 1;
+                cr = (cr + cr_next) >> 1;
+                
+                dst[0] = cb & 0xff;
+                dst[1] = src_y[0];
+                dst[2] = cr & 0xff;
+                dst[3] = src_y[1];
+                dst += 4;
+                src_y += 2;
+            }
+
+            /*
             for (x = 0; x < yw/4; x++) {
                 unsigned int cb1 = (*src_cb & 0xf0);
                 unsigned int cb2 = (*src_cb & 0x0f) << 4;
@@ -495,8 +664,23 @@ TwtwYUVImage *twtw_yuv_image_create_from_serialized (unsigned char *deflatedData
                 dst += 8;
                 src_y += 4;
             }
+            */
         }
         else {  // no interpolation needed
+            for (x = 0; x < cw; x++) {
+                unsigned int cb = *src_cb;
+                unsigned int cr = *src_cr;
+                src_cb++;
+                src_cr++;
+                
+                dst[0] = cb;
+                dst[1] = src_y[0];
+                dst[2] = cr;
+                dst[3] = src_y[1];
+                dst += 4;
+                src_y += 2;
+            }
+            /*
             for (x = 0; x < yw/4; x++) {
                 unsigned int cb1 = (*src_cb & 0xf0);
                 unsigned int cb2 = (*src_cb & 0x0f) << 4;
@@ -517,7 +701,7 @@ TwtwYUVImage *twtw_yuv_image_create_from_serialized (unsigned char *deflatedData
             
                 dst += 8;
                 src_y += 4;
-            }
+            }*/
         }
     }
     
@@ -529,6 +713,8 @@ TwtwYUVImage *twtw_yuv_image_create_from_serialized (unsigned char *deflatedData
     image->buffer = uyvyBuf;
     
     g_free(infData);
+    g_free(cbPlane);
+    g_free(crPlane);
     return image;
 }
 

@@ -31,10 +31,16 @@
 */
 
 #include "twtw-audio.h"
-#include <glib.h>
+#include "twtw-glib.h"
 
 #import <AudioToolbox/AudioToolbox.h>  // Audio Queue (Leopard only)
 #import <Foundation/Foundation.h> 
+
+
+#if !defined(__MACOSX__)
+// Carbon error types are not available on iPhone OS
+#define paramErr -50
+#endif
 
 
 #define kNumberRecordBuffers    3

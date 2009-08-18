@@ -26,7 +26,7 @@
 #ifndef _TWTW_CURVES_H_
 #define _TWTW_CURVES_H_
 
-#include <glib.h>
+#include "twtw-glib.h"
 #include "twtw-units.h"
 
 
@@ -34,6 +34,25 @@
 // curve serialization implementation scales the curve data into this width when writing files, and the other way around.
 #define TWTW_CANONICAL_CANVAS_WIDTH       640
 #define TWTW_CANONICAL_CANVAS_WIDTH_FIXD  TWTW_UNITS_FROM_INT(640)
+
+
+// following is a big old hack to allow device clients to store document curves
+// at native resolution while working on a document, then convert to canonical on read/write.
+
+#if defined(MAEMO)
+    // Maemo screen width is 800px => 125% of canonical
+  #define TWTW_CURVESER_SCALE_IN    TWTW_UNITS_FROM_FLOAT(1.25)
+  #define TWTW_CURVESER_SCALE_OUT   TWTW_UNITS_FROM_FLOAT(0.8)
+#elif defined(__APPLE__) && !defined(__MACOSX__)
+    // iPhone screen width is 480px => 75% of canonical
+  #define TWTW_CURVESER_SCALE_IN         TWTW_UNITS_FROM_FLOAT(0.75)
+  #define TWTW_CURVESER_SCALE_OUT        TWTW_UNITS_FROM_FLOAT(4.0/3.0)
+#else
+  #define TWTW_CURVESER_SCALE_IN    FIXD_ONE
+  #define TWTW_CURVESER_SCALE_OUT   FIXD_ONE
+  #define TWTW_CURVESER_IS_IDENTITY 1
+#endif
+
 
 
 typedef enum {
@@ -66,6 +85,7 @@ extern "C" {
 // naming of these create/retain/release functions follows Cairo's model
 TwtwCurveList *twtw_curvelist_create ();
 TwtwCurveList *twtw_curvelist_ref (TwtwCurveList *curvelist);
+TwtwCurveList *twtw_curvelist_copy (TwtwCurveList *curvelist);
 void twtw_curvelist_destroy (TwtwCurveList *curvelist);
 
 gint twtw_curvelist_get_segment_count (TwtwCurveList *curvelist);

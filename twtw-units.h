@@ -30,7 +30,7 @@
 #include <stdlib.h>
 
 
-#include <glib.h>
+#include "twtw-glib.h"
 
 
 typedef int32_t TwtwUnit;    // TwtwUnit maps directly to TwtwFixedNum

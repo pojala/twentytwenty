@@ -26,7 +26,7 @@
 #ifndef _TWTW_GRAPHICSCACHE_H_
 #define _TWTW_GRAPHICSCACHE_H_
 
-#include <glib.h>
+#include "twtw-glib.h"
 #include "twtw-curves.h"
 
 

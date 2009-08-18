@@ -71,6 +71,28 @@ TwtwCurveList *twtw_curvelist_create ()
     return newlist;
 }
 
+TwtwCurveList *twtw_curvelist_copy (TwtwCurveList *curvelist)
+{
+    if ( !curvelist) return NULL;
+    
+    TwtwCurveList *newlist = g_malloc(sizeof(TwtwCurveList));
+    
+    memcpy(newlist, curvelist, sizeof(TwtwCurveList));
+    
+    newlist->refCount = 1;
+    newlist->editData = NULL;
+    
+    if (newlist->segCount == 0) {
+        newlist->segs = NULL;
+    } else {
+        size_t segDataSize = newlist->segCount * sizeof(TwtwCurveSegment);
+        newlist->segs = g_malloc(segDataSize);
+        memcpy(newlist->segs, curvelist->segs, segDataSize);
+    }
+    
+    return newlist;
+}
+
 TwtwCurveList *twtw_curvelist_ref (TwtwCurveList *curvelist)
 {
     if ( !curvelist) return NULL;
@@ -362,30 +384,22 @@ gpointer twtw_curvelist_get_edit_data (TwtwCurveList *curvelist)
 // twtw documents use a canonical canvas width of 640 pixels.
 // Maemo screen is 800px, so must scale up 25% when reading documents.
 
-// TODO: move canvas in/out scaling somewhere more suitable
-
-#if defined(MAEMO)
- #define CURVESER_SCALE_OUT   TWTW_UNITS_FROM_FLOAT(0.8)
- #define CURVESER_SCALE_IN    TWTW_UNITS_FROM_FLOAT(1.25)
- 
- #define SER_OUT_PT(p_)       { (p_)->x = FIXD_QMUL((p_)->x, CURVESER_SCALE_OUT);   \
-                                (p_)->y = FIXD_QMUL((p_)->y, CURVESER_SCALE_OUT); }
-                              
- #define SER_IN_PT(p_)        { (p_)->x = FIXD_QMUL((p_)->x, CURVESER_SCALE_IN);   \
-                                (p_)->y = FIXD_QMUL((p_)->y, CURVESER_SCALE_IN); }
-                                
- #define SER_OUT_UNIT(v_)     FIXD_QMUL(v_, CURVESER_SCALE_OUT)
- #define SER_IN_UNIT(v_)      FIXD_QMUL(v_, CURVESER_SCALE_IN)
-
-#else
- #define CURVESER_SCALE_OUT   FIXD_ONE
- #define CURVESER_SCALE_IN    FIXD_ONE
- 
+#if defined(TWTW_CURVESER_IS_IDENTITY)
  #define SER_OUT_PT(p_)      { }
  #define SER_IN_PT(p_)       { }
 
  #define SER_OUT_UNIT(v_)    ( v_ )
  #define SER_IN_UNIT(v_)     ( v_ )
+
+#else
+ #define SER_OUT_PT(p_)       { (p_)->x = FIXD_QMUL((p_)->x, TWTW_CURVESER_SCALE_OUT);   \
+                                (p_)->y = FIXD_QMUL((p_)->y, TWTW_CURVESER_SCALE_OUT); }
+                              
+ #define SER_IN_PT(p_)        { (p_)->x = FIXD_QMUL((p_)->x, TWTW_CURVESER_SCALE_IN);   \
+                                (p_)->y = FIXD_QMUL((p_)->y, TWTW_CURVESER_SCALE_IN); }
+                                
+ #define SER_OUT_UNIT(v_)     FIXD_QMUL(v_, TWTW_CURVESER_SCALE_OUT)
+ #define SER_IN_UNIT(v_)      FIXD_QMUL(v_, TWTW_CURVESER_SCALE_IN)
 
 #endif
 
@@ -542,10 +556,10 @@ TwtwCurveList *twtw_curvelist_create_from_serialized (unsigned char *data, size_
     SER_IN_PT(&(newlist->implicitStartPoint));
     SER_IN_PT(&(newlist->implicitEndPoint));
     
-        //newlist->implicitStartPoint.x = FIXD_QMUL(newlist->implicitStartPoint.x, CURVESER_SCALE_IN);
-        //newlist->implicitStartPoint.y = FIXD_QMUL(newlist->implicitStartPoint.y, CURVESER_SCALE_IN);
-        //newlist->implicitEndPoint.x = FIXD_QMUL(newlist->implicitEndPoint.x, CURVESER_SCALE_IN);
-        //newlist->implicitEndPoint.y = FIXD_QMUL(newlist->implicitEndPoint.y, CURVESER_SCALE_IN);
+        //newlist->implicitStartPoint.x = FIXD_QMUL(newlist->implicitStartPoint.x, TWTW_CURVESER_SCALE_IN);
+        //newlist->implicitStartPoint.y = FIXD_QMUL(newlist->implicitStartPoint.y, TWTW_CURVESER_SCALE_IN);
+        //newlist->implicitEndPoint.x = FIXD_QMUL(newlist->implicitEndPoint.x, TWTW_CURVESER_SCALE_IN);
+        //newlist->implicitEndPoint.y = FIXD_QMUL(newlist->implicitEndPoint.y, TWTW_CURVESER_SCALE_IN);
     
     newlist->colorID = *(header+18);
     newlist->isClosed = (*(header+19) & 0x01) ? TRUE : FALSE;
@@ -587,7 +601,7 @@ TwtwCurveList *twtw_curvelist_create_from_serialized (unsigned char *data, size_
                 //printf("  %i: decoding non-integral point (%x, %x)\n", i, dseg->endPoint.x, dseg->endPoint.y);
                 pdata += 8;
             }
-            if (CURVESER_SCALE_IN != FIXD_ONE) {
+            if (TWTW_CURVESER_SCALE_IN != FIXD_ONE) {
                 SER_IN_PT(&(dseg->endPoint));
             }
             

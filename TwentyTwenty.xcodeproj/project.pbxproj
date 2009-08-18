@@ -88,13 +88,141 @@
 		5A54B7720F6B2C9300A2939B /* twtw-photo.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A54B7710F6B2C9300A2939B /* twtw-photo.c */; };
 		5A54B8F50F6D621200A2939B /* InfoPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5A54B8F30F6D621200A2939B /* InfoPanel.xib */; };
 		5A54B8F90F6D622100A2939B /* TwtwInfoPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A54B8F80F6D622100A2939B /* TwtwInfoPanelController.m */; };
+		5A77C4B5101BA7EA00FEAC55 /* CloudPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5A77C4B3101BA7E900FEAC55 /* CloudPanel.xib */; };
+		5A77C4BD101BB29D00FEAC55 /* TwtwCloudPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A77C4BC101BB29D00FEAC55 /* TwtwCloudPanelController.m */; };
+		5A77C4FC101D995C00FEAC55 /* twtw-cloud-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A77C4FB101D995C00FEAC55 /* twtw-cloud-apple.m */; };
+		5A77C5B7101E126E00FEAC55 /* twtw-json.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A77C5B6101E126E00FEAC55 /* twtw-json.c */; };
+		5A77C86F101F39BC00FEAC55 /* twtw-json.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A77C5B6101E126E00FEAC55 /* twtw-json.c */; };
+		5A77C870101F39BD00FEAC55 /* twtw-json.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A77C5B5101E126E00FEAC55 /* twtw-json.h */; };
+		5A77C871101F39BE00FEAC55 /* twtw-cloud-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A77C4FB101D995C00FEAC55 /* twtw-cloud-apple.m */; };
+		5A77C872101F39BF00FEAC55 /* twtw-cloud.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A77C4F9101D994F00FEAC55 /* twtw-cloud.h */; };
 		5A8B66970F6FF61E0088CE83 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A8B66960F6FF61E0088CE83 /* libz.dylib */; };
 		5A8B69DA0F73B3CA0088CE83 /* twtw_icon_osx.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5A8B69D90F73B3CA0088CE83 /* twtw_icon_osx.icns */; };
 		5A8B6ADA0F73E8B50088CE83 /* twtw_documenticon_osx.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5A8B6AD90F73E8B50088CE83 /* twtw_documenticon_osx.icns */; };
 		5A8B6AE50F73EBF10088CE83 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 5A8B6AE40F73EBF10088CE83 /* Credits.rtf */; };
+		5A96131E103B43E200761BF5 /* LoginGAE.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5A96131D103B43E200761BF5 /* LoginGAE.xib */; };
 		5AD942130EDC13590045239A /* TwtwAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD942120EDC13590045239A /* TwtwAppDelegate.m */; };
 		5AD942230EDC166D0045239A /* TwtwCanvasView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD942220EDC166D0045239A /* TwtwCanvasView.m */; };
 		5AD942270EDC16AD0045239A /* twtw-curves.c in Sources */ = {isa = PBXBuildFile; fileRef = 5AD942260EDC16AD0045239A /* twtw-curves.c */; };
+		5AEE4F5410148B8300D5A146 /* bitwise.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DBA0ED0E125005E37FB /* bitwise.c */; };
+		5AEE4F5510148B8300D5A146 /* framing.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DBB0ED0E125005E37FB /* framing.c */; };
+		5AEE4F5610148B8400D5A146 /* ogg.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DBF0ED0E169005E37FB /* ogg.h */; };
+		5AEE4F5710148B8500D5A146 /* os_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DC00ED0E169005E37FB /* os_types.h */; };
+		5AEE4F6510148CB500D5A146 /* metric_internal.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DE30ED0E380005E37FB /* metric_internal.c */; };
+		5AEE4F6610148CB600D5A146 /* oggz.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DED0ED0E380005E37FB /* oggz.c */; };
+		5AEE4F6710148CB700D5A146 /* oggz.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E050ED0E3B3005E37FB /* oggz.h */; };
+		5AEE4F6810148CB800D5A146 /* oggz_auto.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DE60ED0E380005E37FB /* oggz_auto.c */; };
+		5AEE4F6910148CB900D5A146 /* oggz_auto.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DE50ED0E380005E37FB /* oggz_auto.h */; };
+		5AEE4F6A10148CB900D5A146 /* oggz_byteorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DE40ED0E380005E37FB /* oggz_byteorder.h */; };
+		5AEE4F6B10148CBA00D5A146 /* oggz_comments.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DE20ED0E380005E37FB /* oggz_comments.c */; };
+		5AEE4F6C10148CBB00D5A146 /* oggz_comments.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E070ED0E3B3005E37FB /* oggz_comments.h */; };
+		5AEE4F6D10148CBC00D5A146 /* oggz_compat.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DF00ED0E380005E37FB /* oggz_compat.h */; };
+		5AEE4F6E10148CBE00D5A146 /* oggz_constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E0B0ED0E3B3005E37FB /* oggz_constants.h */; };
+		5AEE4F6F10148CBF00D5A146 /* oggz_dlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DEF0ED0E380005E37FB /* oggz_dlist.c */; };
+		5AEE4F7010148CBF00D5A146 /* oggz_dlist.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DEE0ED0E380005E37FB /* oggz_dlist.h */; };
+		5AEE4F7110148CC000D5A146 /* oggz_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DE70ED0E380005E37FB /* oggz_io.c */; };
+		5AEE4F7210148CC000D5A146 /* oggz_io.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E020ED0E3B3005E37FB /* oggz_io.h */; };
+		5AEE4F7310148CC400D5A146 /* oggz_macros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DEC0ED0E380005E37FB /* oggz_macros.h */; };
+		5AEE4F7410148CC500D5A146 /* oggz_off_t.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E090ED0E3B3005E37FB /* oggz_off_t.h */; };
+		5AEE4F7510148CC900D5A146 /* oggz_read.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DEA0ED0E380005E37FB /* oggz_read.c */; };
+		5AEE4F7610148CCA00D5A146 /* oggz_read.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E0A0ED0E3B3005E37FB /* oggz_read.h */; };
+		5AEE4F7710148CCB00D5A146 /* oggz_seek.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DE90ED0E380005E37FB /* oggz_seek.c */; };
+		5AEE4F7810148CCB00D5A146 /* oggz_seek.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E000ED0E3B3005E37FB /* oggz_seek.h */; };
+		5AEE4F7910148CCD00D5A146 /* oggz_stream.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DE80ED0E380005E37FB /* oggz_stream.c */; };
+		5AEE4F7A10148CCE00D5A146 /* oggz_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E0C0ED0E3B3005E37FB /* oggz_stream.h */; };
+		5AEE4F7B10148CCF00D5A146 /* oggz_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DE00ED0E380005E37FB /* oggz_table.c */; };
+		5AEE4F7C10148CCF00D5A146 /* oggz_table.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E010ED0E3B3005E37FB /* oggz_table.h */; };
+		5AEE4F7D10148CD100D5A146 /* oggz_vector.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DDF0ED0E380005E37FB /* oggz_vector.c */; };
+		5AEE4F7E10148CD100D5A146 /* oggz_vector.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307DDE0ED0E37F005E37FB /* oggz_vector.h */; };
+		5AEE4F7F10148CD200D5A146 /* oggz_write.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307DDD0ED0E37F005E37FB /* oggz_write.c */; };
+		5AEE4F8010148CD200D5A146 /* oggz_write.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307E080ED0E3B3005E37FB /* oggz_write.h */; };
+		5AEE4F8110148CD300D5A146 /* skeleton.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A4CC2B10EEC31B800CB9BE1 /* skeleton.c */; };
+		5AEE4F8210148CD300D5A146 /* skeleton.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A4CC2B20EEC31B800CB9BE1 /* skeleton.h */; };
+		5AEE4F8510148D0900D5A146 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AEE4F8410148D0900D5A146 /* AudioToolbox.framework */; };
+		5AEE4F8910148D0C00D5A146 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AEE4F8810148D0C00D5A146 /* CoreAudio.framework */; };
+		5AEE4F8D10148D1400D5A146 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AEE4F8C10148D1400D5A146 /* Foundation.framework */; };
+		5AEE4F9010148D1D00D5A146 /* twtw-audio-wavfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A05337B0EE87817007D37F8 /* twtw-audio-wavfile.h */; };
+		5AEE4F9110148D1E00D5A146 /* twtw-audio-wavfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A05337C0EE87817007D37F8 /* twtw-audio-wavfile.c */; };
+		5AEE4F9410148D2F00D5A146 /* twtw-audio-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A052B700EE1B399007D37F8 /* twtw-audio-apple.m */; };
+		5AEE4F9810148D7400D5A146 /* twtw-audio.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A052B6F0EE1B399007D37F8 /* twtw-audio.h */; };
+		5AEE4F9C10148D9300D5A146 /* bits.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D5C0ED0CE96005E37FB /* bits.c */; };
+		5AEE4F9D10148D9400D5A146 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D3B0ED0CE96005E37FB /* buffer.c */; };
+		5AEE4F9E10148D9500D5A146 /* cb_search.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D0F0ED0CE96005E37FB /* cb_search.c */; };
+		5AEE4F9F10148D9900D5A146 /* exc_10_16_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D5E0ED0CE96005E37FB /* exc_10_16_table.c */; };
+		5AEE4FA010148D9A00D5A146 /* exc_10_32_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D330ED0CE96005E37FB /* exc_10_32_table.c */; };
+		5AEE4FA110148D9A00D5A146 /* exc_20_32_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D420ED0CE96005E37FB /* exc_20_32_table.c */; };
+		5AEE4FA210148D9B00D5A146 /* exc_5_256_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D520ED0CE96005E37FB /* exc_5_256_table.c */; };
+		5AEE4FA310148D9C00D5A146 /* exc_5_64_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D270ED0CE96005E37FB /* exc_5_64_table.c */; };
+		5AEE4FA410148D9C00D5A146 /* exc_8_128_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D2E0ED0CE96005E37FB /* exc_8_128_table.c */; };
+		5AEE4FA510148D9D00D5A146 /* fftwrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D080ED0CE96005E37FB /* fftwrap.c */; };
+		5AEE4FA610148DA100D5A146 /* filterbank.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D1F0ED0CE96005E37FB /* filterbank.c */; };
+		5AEE4FA710148DA200D5A146 /* filters.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D230ED0CE96005E37FB /* filters.c */; };
+		5AEE4FA810148DA900D5A146 /* gain_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D370ED0CE96005E37FB /* gain_table.c */; };
+		5AEE4FA910148DAA00D5A146 /* gain_table_lbr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D580ED0CE96005E37FB /* gain_table_lbr.c */; };
+		5AEE4FAA10148DAA00D5A146 /* hexc_10_32_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D570ED0CE96005E37FB /* hexc_10_32_table.c */; };
+		5AEE4FAB10148DAB00D5A146 /* hexc_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D540ED0CE96005E37FB /* hexc_table.c */; };
+		5AEE4FAC10148DAC00D5A146 /* high_lsp_tables.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D530ED0CE96005E37FB /* high_lsp_tables.c */; };
+		5AEE4FAD10148DAC00D5A146 /* jitter.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D150ED0CE96005E37FB /* jitter.c */; };
+		5AEE4FAE10148DAD00D5A146 /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D140ED0CE96005E37FB /* kiss_fft.c */; };
+		5AEE4FAF10148DAE00D5A146 /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D1A0ED0CE96005E37FB /* kiss_fftr.c */; };
+		5AEE4FB010148DB000D5A146 /* lpc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D2F0ED0CE96005E37FB /* lpc.c */; };
+		5AEE4FB110148DB300D5A146 /* lsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D3A0ED0CE96005E37FB /* lsp.c */; };
+		5AEE4FB210148DB700D5A146 /* lsp_tables_nb.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D310ED0CE96005E37FB /* lsp_tables_nb.c */; };
+		5AEE4FB310148DB800D5A146 /* ltp.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D450ED0CE96005E37FB /* ltp.c */; };
+		5AEE4FB410148DBB00D5A146 /* modes.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D560ED0CE96005E37FB /* modes.c */; };
+		5AEE4FB510148DBF00D5A146 /* nb_celp.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D060ED0CE96005E37FB /* nb_celp.c */; };
+		5AEE4FB610148DC100D5A146 /* preprocess.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D170ED0CE96005E37FB /* preprocess.c */; };
+		5AEE4FB710148DC400D5A146 /* quant_lsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D130ED0CE96005E37FB /* quant_lsp.c */; };
+		5AEE4FB810148DC700D5A146 /* resample.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D0C0ED0CE96005E37FB /* resample.c */; };
+		5AEE4FB910148DC800D5A146 /* sb_celp.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D350ED0CE96005E37FB /* sb_celp.c */; };
+		5AEE4FBA10148DCA00D5A146 /* scal.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D2C0ED0CE96005E37FB /* scal.c */; };
+		5AEE4FBB10148DCB00D5A146 /* smallft.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D2B0ED0CE96005E37FB /* smallft.c */; };
+		5AEE4FBC10148DCE00D5A146 /* speex.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D290ED0CE96005E37FB /* speex.c */; };
+		5AEE4FBD10148DCF00D5A146 /* speex.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D9A0ED0CEEB005E37FB /* speex.h */; };
+		5AEE4FBE10148DD000D5A146 /* speex_bits.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D910ED0CEEB005E37FB /* speex_bits.h */; };
+		5AEE4FBF10148DD100D5A146 /* speex_buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D950ED0CEEB005E37FB /* speex_buffer.h */; };
+		5AEE4FC010148DD100D5A146 /* speex_callbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D4C0ED0CE96005E37FB /* speex_callbacks.c */; };
+		5AEE4FC110148DD200D5A146 /* speex_callbacks.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D960ED0CEEB005E37FB /* speex_callbacks.h */; };
+		5AEE4FC210148DD400D5A146 /* speex_config_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D9B0ED0CEEB005E37FB /* speex_config_types.h */; };
+		5AEE4FC310148DD500D5A146 /* speex_echo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D930ED0CEEB005E37FB /* speex_echo.h */; };
+		5AEE4FC410148DD700D5A146 /* speex_header.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D4B0ED0CE96005E37FB /* speex_header.c */; };
+		5AEE4FC510148DD800D5A146 /* speex_header.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D9C0ED0CEEB005E37FB /* speex_header.h */; };
+		5AEE4FC610148DD900D5A146 /* speex_jitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D970ED0CEEB005E37FB /* speex_jitter.h */; };
+		5AEE4FC710148DD900D5A146 /* speex_preprocess.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D990ED0CEEB005E37FB /* speex_preprocess.h */; };
+		5AEE4FC810148DDA00D5A146 /* speex_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D940ED0CEEB005E37FB /* speex_resampler.h */; };
+		5AEE4FC910148DDB00D5A146 /* speex_stereo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D9D0ED0CEEB005E37FB /* speex_stereo.h */; };
+		5AEE4FCA10148DDC00D5A146 /* speex_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A307D980ED0CEEB005E37FB /* speex_types.h */; };
+		5AEE4FCB10148DDF00D5A146 /* stereo.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D490ED0CE96005E37FB /* stereo.c */; };
+		5AEE4FCC10148DE100D5A146 /* vbr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D590ED0CE96005E37FB /* vbr.c */; };
+		5AEE4FCD10148DE700D5A146 /* vq.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D3F0ED0CE96005E37FB /* vq.c */; };
+		5AEE4FCE10148DE800D5A146 /* window.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D100ED0CE96005E37FB /* window.c */; };
+		5AEE4FFA10148F7800D5A146 /* twtw-audioconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A052C630EE21A8A007D37F8 /* twtw-audioconv.c */; };
+		5AEE4FFB10148F7800D5A146 /* twtw-audioconv.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A052C620EE21A8A007D37F8 /* twtw-audioconv.h */; };
+		5AEE4FFD10148F7F00D5A146 /* twtw-byteorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A0531B00EE805C4007D37F8 /* twtw-byteorder.h */; };
+		5AEE4FFE10148F8000D5A146 /* twtw-fixedpoint.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A0535610EE97BA6007D37F8 /* twtw-fixedpoint.c */; };
+		5AEE4FFF10148F8000D5A146 /* twtw-fixedpoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A0535600EE97BA6007D37F8 /* twtw-fixedpoint.h */; };
+		5AEE500010148F8100D5A146 /* twtw-units.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AD9421D0EDC14080045239A /* twtw-units.h */; };
+		5AEE500910148FF700D5A146 /* twtw-curves.c in Sources */ = {isa = PBXBuildFile; fileRef = 5AD942260EDC16AD0045239A /* twtw-curves.c */; };
+		5AEE500A10148FF800D5A146 /* twtw-curves.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AD942250EDC16AD0045239A /* twtw-curves.h */; };
+		5AEE500B10148FF900D5A146 /* twtw-document.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A052CC80EE2C16E007D37F8 /* twtw-document.c */; };
+		5AEE500C10148FFA00D5A146 /* twtw-document.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A052CC70EE2C16E007D37F8 /* twtw-document.h */; };
+		5AEE500D10148FFB00D5A146 /* twtw-editing.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A431BCF0EE198E0001C3BD4 /* twtw-editing.c */; };
+		5AEE500E10148FFB00D5A146 /* twtw-editing.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A431BCE0EE198E0001C3BD4 /* twtw-editing.h */; };
+		5AEE50161014907100D5A146 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AEE50151014907100D5A146 /* libz.dylib */; };
+		5AEE50171014907800D5A146 /* twtw-photo.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A54B7710F6B2C9300A2939B /* twtw-photo.c */; };
+		5AEE50181014907800D5A146 /* twtw-photo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A54B7700F6B2C9300A2939B /* twtw-photo.h */; };
+		5AEE501A1014907B00D5A146 /* twtw-graphicscache-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A052FED0EE58413007D37F8 /* twtw-graphicscache-apple.m */; };
+		5AEE501B1014907C00D5A146 /* twtw-graphicscache.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A052FEC0EE583F0007D37F8 /* twtw-graphicscache.h */; };
+		5AEE501F101490A000D5A146 /* twtw-ogg.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A4318CA0EE013A4001C3BD4 /* twtw-ogg.c */; };
+		5AEE5020101490A100D5A146 /* twtw-ogg.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A4318C90EE013A4001C3BD4 /* twtw-ogg.h */; };
+		5AEE5024101490C300D5A146 /* twtw-filesystem-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A052CF90EE2D6F2007D37F8 /* twtw-filesystem-apple.m */; };
+		5AEE5025101490C400D5A146 /* twtw-filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A052CF80EE2D6F2007D37F8 /* twtw-filesystem.h */; };
+		5AEE5028101490DC00D5A146 /* twtw_glib_lookalike.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A54B2A30F69A15300A2939B /* twtw_glib_lookalike.h */; };
+		5AEE5029101490DD00D5A146 /* twtw_glib_lookalike_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A54B2A40F69A15300A2939B /* twtw_glib_lookalike_mac.m */; };
+		5AEE502D1014912C00D5A146 /* twtw-glib.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AEE502C1014912C00D5A146 /* twtw-glib.h */; };
+		5AEE50F81014993100D5A146 /* mdf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D510ED0CE96005E37FB /* mdf.c */; };
+		5AEE50F91014994500D5A146 /* modes_wb.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A307D070ED0CE96005E37FB /* modes_wb.c */; };
+		5AEE517B10149E1A00D5A146 /* twtw-graphicscache-priv.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AEE517A10149E1A00D5A146 /* twtw-graphicscache-priv.h */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -290,6 +418,14 @@
 		5A54B8F40F6D621200A2939B /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/InfoPanel.xib; sourceTree = "<group>"; };
 		5A54B8F70F6D622100A2939B /* TwtwInfoPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwtwInfoPanelController.h; sourceTree = "<group>"; };
 		5A54B8F80F6D622100A2939B /* TwtwInfoPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwtwInfoPanelController.m; sourceTree = "<group>"; };
+		5A77C4B4101BA7EA00FEAC55 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/CloudPanel.xib; sourceTree = "<group>"; };
+		5A77C4B8101BAF7E00FEAC55 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/LoginGAE.xib; sourceTree = "<group>"; };
+		5A77C4BB101BB29D00FEAC55 /* TwtwCloudPanelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwtwCloudPanelController.h; sourceTree = "<group>"; };
+		5A77C4BC101BB29D00FEAC55 /* TwtwCloudPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwtwCloudPanelController.m; sourceTree = "<group>"; };
+		5A77C4F9101D994F00FEAC55 /* twtw-cloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "twtw-cloud.h"; sourceTree = "<group>"; };
+		5A77C4FB101D995C00FEAC55 /* twtw-cloud-apple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "twtw-cloud-apple.m"; sourceTree = "<group>"; };
+		5A77C5B5101E126E00FEAC55 /* twtw-json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "twtw-json.h"; sourceTree = "<group>"; };
+		5A77C5B6101E126E00FEAC55 /* twtw-json.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "twtw-json.c"; sourceTree = "<group>"; };
 		5A8B66960F6FF61E0088CE83 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5A8B69D90F73B3CA0088CE83 /* twtw_icon_osx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = twtw_icon_osx.icns; path = gfx/twtw_icon_osx.icns; sourceTree = "<group>"; };
 		5A8B6AD90F73E8B50088CE83 /* twtw_documenticon_osx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = twtw_documenticon_osx.icns; path = gfx/twtw_documenticon_osx.icns; sourceTree = "<group>"; };
@@ -301,11 +437,29 @@
 		5AD942220EDC166D0045239A /* TwtwCanvasView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwtwCanvasView.m; sourceTree = "<group>"; };
 		5AD942250EDC16AD0045239A /* twtw-curves.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "twtw-curves.h"; sourceTree = "<group>"; };
 		5AD942260EDC16AD0045239A /* twtw-curves.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "twtw-curves.c"; sourceTree = "<group>"; };
+		5AEE4F4E10148AEE00D5A146 /* libTwtwiPhoneBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTwtwiPhoneBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AEE4F8410148D0900D5A146 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		5AEE4F8810148D0C00D5A146 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		5AEE4F8C10148D1400D5A146 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5AEE50151014907100D5A146 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5AEE502C1014912C00D5A146 /* twtw-glib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "twtw-glib.h"; sourceTree = "<group>"; };
+		5AEE517A10149E1A00D5A146 /* twtw-graphicscache-priv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "twtw-graphicscache-priv.h"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TwentyTwenty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwentyTwenty.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5AEE4F4C10148AEE00D5A146 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AEE4F8510148D0900D5A146 /* AudioToolbox.framework in Frameworks */,
+				5AEE4F8910148D0C00D5A146 /* CoreAudio.framework in Frameworks */,
+				5AEE4F8D10148D1400D5A146 /* Foundation.framework in Frameworks */,
+				5AEE50161014907100D5A146 /* libz.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8D11072E0486CEB800E47090 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -329,6 +483,8 @@
 				5AD942220EDC166D0045239A /* TwtwCanvasView.m */,
 				5A54B8F70F6D622100A2939B /* TwtwInfoPanelController.h */,
 				5A54B8F80F6D622100A2939B /* TwtwInfoPanelController.m */,
+				5A77C4BB101BB29D00FEAC55 /* TwtwCloudPanelController.h */,
+				5A77C4BC101BB29D00FEAC55 /* TwtwCloudPanelController.m */,
 			);
 			name = "Mac Cocoa UI";
 			sourceTree = "<group>";
@@ -357,6 +513,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* TwentyTwenty.app */,
+				5AEE4F4E10148AEE00D5A146 /* libTwtwiPhoneBase.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -377,6 +534,10 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				5A8B66960F6FF61E0088CE83 /* libz.dylib */,
+				5AEE4F8410148D0900D5A146 /* AudioToolbox.framework */,
+				5AEE4F8810148D0C00D5A146 /* CoreAudio.framework */,
+				5AEE4F8C10148D1400D5A146 /* Foundation.framework */,
+				5AEE50151014907100D5A146 /* libz.dylib */,
 			);
 			name = TwentyTwenty;
 			sourceTree = "<group>";
@@ -386,6 +547,7 @@
 			children = (
 				32CA4F630368D1EE00C91783 /* TwentyTwenty_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
+				5AEE502C1014912C00D5A146 /* twtw-glib.h */,
 				5A54B2A30F69A15300A2939B /* twtw_glib_lookalike.h */,
 				5A54B2A40F69A15300A2939B /* twtw_glib_lookalike_mac.m */,
 			);
@@ -403,6 +565,8 @@
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
 				5A54B8F30F6D621200A2939B /* InfoPanel.xib */,
+				5A77C4B3101BA7E900FEAC55 /* CloudPanel.xib */,
+				5A96131D103B43E200761BF5 /* LoginGAE.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -441,6 +605,7 @@
 				5A54B7700F6B2C9300A2939B /* twtw-photo.h */,
 				5A54B7710F6B2C9300A2939B /* twtw-photo.c */,
 				5A052FEC0EE583F0007D37F8 /* twtw-graphicscache.h */,
+				5AEE517A10149E1A00D5A146 /* twtw-graphicscache-priv.h */,
 				5A052FED0EE58413007D37F8 /* twtw-graphicscache-apple.m */,
 			);
 			name = document;
@@ -674,13 +839,93 @@
 				5A4318CA0EE013A4001C3BD4 /* twtw-ogg.c */,
 				5A052CF80EE2D6F2007D37F8 /* twtw-filesystem.h */,
 				5A052CF90EE2D6F2007D37F8 /* twtw-filesystem-apple.m */,
+				5A77C5B5101E126E00FEAC55 /* twtw-json.h */,
+				5A77C5B6101E126E00FEAC55 /* twtw-json.c */,
+				5A77C4F9101D994F00FEAC55 /* twtw-cloud.h */,
+				5A77C4FB101D995C00FEAC55 /* twtw-cloud-apple.m */,
 			);
 			name = "file format and paths";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		5AEE4F4A10148AEE00D5A146 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AEE4F5610148B8400D5A146 /* ogg.h in Headers */,
+				5AEE4F5710148B8500D5A146 /* os_types.h in Headers */,
+				5AEE4F6710148CB700D5A146 /* oggz.h in Headers */,
+				5AEE4F6910148CB900D5A146 /* oggz_auto.h in Headers */,
+				5AEE4F6A10148CB900D5A146 /* oggz_byteorder.h in Headers */,
+				5AEE4F6C10148CBB00D5A146 /* oggz_comments.h in Headers */,
+				5AEE4F6D10148CBC00D5A146 /* oggz_compat.h in Headers */,
+				5AEE4F6E10148CBE00D5A146 /* oggz_constants.h in Headers */,
+				5AEE4F7010148CBF00D5A146 /* oggz_dlist.h in Headers */,
+				5AEE4F7210148CC000D5A146 /* oggz_io.h in Headers */,
+				5AEE4F7310148CC400D5A146 /* oggz_macros.h in Headers */,
+				5AEE4F7410148CC500D5A146 /* oggz_off_t.h in Headers */,
+				5AEE4F7610148CCA00D5A146 /* oggz_read.h in Headers */,
+				5AEE4F7810148CCB00D5A146 /* oggz_seek.h in Headers */,
+				5AEE4F7A10148CCE00D5A146 /* oggz_stream.h in Headers */,
+				5AEE4F7C10148CCF00D5A146 /* oggz_table.h in Headers */,
+				5AEE4F7E10148CD100D5A146 /* oggz_vector.h in Headers */,
+				5AEE4F8010148CD200D5A146 /* oggz_write.h in Headers */,
+				5AEE4F8210148CD300D5A146 /* skeleton.h in Headers */,
+				5AEE4F9010148D1D00D5A146 /* twtw-audio-wavfile.h in Headers */,
+				5AEE4F9810148D7400D5A146 /* twtw-audio.h in Headers */,
+				5AEE4FBD10148DCF00D5A146 /* speex.h in Headers */,
+				5AEE4FBE10148DD000D5A146 /* speex_bits.h in Headers */,
+				5AEE4FBF10148DD100D5A146 /* speex_buffer.h in Headers */,
+				5AEE4FC110148DD200D5A146 /* speex_callbacks.h in Headers */,
+				5AEE4FC210148DD400D5A146 /* speex_config_types.h in Headers */,
+				5AEE4FC310148DD500D5A146 /* speex_echo.h in Headers */,
+				5AEE4FC510148DD800D5A146 /* speex_header.h in Headers */,
+				5AEE4FC610148DD900D5A146 /* speex_jitter.h in Headers */,
+				5AEE4FC710148DD900D5A146 /* speex_preprocess.h in Headers */,
+				5AEE4FC810148DDA00D5A146 /* speex_resampler.h in Headers */,
+				5AEE4FC910148DDB00D5A146 /* speex_stereo.h in Headers */,
+				5AEE4FCA10148DDC00D5A146 /* speex_types.h in Headers */,
+				5AEE4FFB10148F7800D5A146 /* twtw-audioconv.h in Headers */,
+				5AEE4FFD10148F7F00D5A146 /* twtw-byteorder.h in Headers */,
+				5AEE4FFF10148F8000D5A146 /* twtw-fixedpoint.h in Headers */,
+				5AEE500010148F8100D5A146 /* twtw-units.h in Headers */,
+				5AEE500A10148FF800D5A146 /* twtw-curves.h in Headers */,
+				5AEE500C10148FFA00D5A146 /* twtw-document.h in Headers */,
+				5AEE500E10148FFB00D5A146 /* twtw-editing.h in Headers */,
+				5AEE50181014907800D5A146 /* twtw-photo.h in Headers */,
+				5AEE501B1014907C00D5A146 /* twtw-graphicscache.h in Headers */,
+				5AEE5020101490A100D5A146 /* twtw-ogg.h in Headers */,
+				5AEE5025101490C400D5A146 /* twtw-filesystem.h in Headers */,
+				5AEE5028101490DC00D5A146 /* twtw_glib_lookalike.h in Headers */,
+				5AEE502D1014912C00D5A146 /* twtw-glib.h in Headers */,
+				5AEE517B10149E1A00D5A146 /* twtw-graphicscache-priv.h in Headers */,
+				5A77C870101F39BD00FEAC55 /* twtw-json.h in Headers */,
+				5A77C872101F39BF00FEAC55 /* twtw-cloud.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		5AEE4F4D10148AEE00D5A146 /* TwtwiPhoneBase */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AEE4F5110148B1300D5A146 /* Build configuration list for PBXNativeTarget "TwtwiPhoneBase" */;
+			buildPhases = (
+				5AEE4F4A10148AEE00D5A146 /* Headers */,
+				5AEE4F4B10148AEE00D5A146 /* Sources */,
+				5AEE4F4C10148AEE00D5A146 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TwtwiPhoneBase;
+			productName = TwtwiPhoneBase;
+			productReference = 5AEE4F4E10148AEE00D5A146 /* libTwtwiPhoneBase.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		8D1107260486CEB800E47090 /* TwentyTwenty */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "TwentyTwenty" */;
@@ -712,6 +957,7 @@
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* TwentyTwenty */,
+				5AEE4F4D10148AEE00D5A146 /* TwtwiPhoneBase */,
 			);
 		};
 /* End PBXProject section */
@@ -736,12 +982,91 @@
 				5A8B69DA0F73B3CA0088CE83 /* twtw_icon_osx.icns in Resources */,
 				5A8B6ADA0F73E8B50088CE83 /* twtw_documenticon_osx.icns in Resources */,
 				5A8B6AE50F73EBF10088CE83 /* Credits.rtf in Resources */,
+				5A77C4B5101BA7EA00FEAC55 /* CloudPanel.xib in Resources */,
+				5A96131E103B43E200761BF5 /* LoginGAE.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5AEE4F4B10148AEE00D5A146 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AEE4F5410148B8300D5A146 /* bitwise.c in Sources */,
+				5AEE4F5510148B8300D5A146 /* framing.c in Sources */,
+				5AEE4F6510148CB500D5A146 /* metric_internal.c in Sources */,
+				5AEE4F6610148CB600D5A146 /* oggz.c in Sources */,
+				5AEE4F6810148CB800D5A146 /* oggz_auto.c in Sources */,
+				5AEE4F6B10148CBA00D5A146 /* oggz_comments.c in Sources */,
+				5AEE4F6F10148CBF00D5A146 /* oggz_dlist.c in Sources */,
+				5AEE4F7110148CC000D5A146 /* oggz_io.c in Sources */,
+				5AEE4F7510148CC900D5A146 /* oggz_read.c in Sources */,
+				5AEE4F7710148CCB00D5A146 /* oggz_seek.c in Sources */,
+				5AEE4F7910148CCD00D5A146 /* oggz_stream.c in Sources */,
+				5AEE4F7B10148CCF00D5A146 /* oggz_table.c in Sources */,
+				5AEE4F7D10148CD100D5A146 /* oggz_vector.c in Sources */,
+				5AEE4F7F10148CD200D5A146 /* oggz_write.c in Sources */,
+				5AEE4F8110148CD300D5A146 /* skeleton.c in Sources */,
+				5AEE4F9110148D1E00D5A146 /* twtw-audio-wavfile.c in Sources */,
+				5AEE4F9410148D2F00D5A146 /* twtw-audio-apple.m in Sources */,
+				5AEE4F9C10148D9300D5A146 /* bits.c in Sources */,
+				5AEE4F9D10148D9400D5A146 /* buffer.c in Sources */,
+				5AEE4F9E10148D9500D5A146 /* cb_search.c in Sources */,
+				5AEE4F9F10148D9900D5A146 /* exc_10_16_table.c in Sources */,
+				5AEE4FA010148D9A00D5A146 /* exc_10_32_table.c in Sources */,
+				5AEE4FA110148D9A00D5A146 /* exc_20_32_table.c in Sources */,
+				5AEE4FA210148D9B00D5A146 /* exc_5_256_table.c in Sources */,
+				5AEE4FA310148D9C00D5A146 /* exc_5_64_table.c in Sources */,
+				5AEE4FA410148D9C00D5A146 /* exc_8_128_table.c in Sources */,
+				5AEE4FA510148D9D00D5A146 /* fftwrap.c in Sources */,
+				5AEE4FA610148DA100D5A146 /* filterbank.c in Sources */,
+				5AEE4FA710148DA200D5A146 /* filters.c in Sources */,
+				5AEE4FA810148DA900D5A146 /* gain_table.c in Sources */,
+				5AEE4FA910148DAA00D5A146 /* gain_table_lbr.c in Sources */,
+				5AEE4FAA10148DAA00D5A146 /* hexc_10_32_table.c in Sources */,
+				5AEE4FAB10148DAB00D5A146 /* hexc_table.c in Sources */,
+				5AEE4FAC10148DAC00D5A146 /* high_lsp_tables.c in Sources */,
+				5AEE4FAD10148DAC00D5A146 /* jitter.c in Sources */,
+				5AEE4FAE10148DAD00D5A146 /* kiss_fft.c in Sources */,
+				5AEE4FAF10148DAE00D5A146 /* kiss_fftr.c in Sources */,
+				5AEE4FB010148DB000D5A146 /* lpc.c in Sources */,
+				5AEE4FB110148DB300D5A146 /* lsp.c in Sources */,
+				5AEE4FB210148DB700D5A146 /* lsp_tables_nb.c in Sources */,
+				5AEE4FB310148DB800D5A146 /* ltp.c in Sources */,
+				5AEE4FB410148DBB00D5A146 /* modes.c in Sources */,
+				5AEE4FB510148DBF00D5A146 /* nb_celp.c in Sources */,
+				5AEE4FB610148DC100D5A146 /* preprocess.c in Sources */,
+				5AEE4FB710148DC400D5A146 /* quant_lsp.c in Sources */,
+				5AEE4FB810148DC700D5A146 /* resample.c in Sources */,
+				5AEE4FB910148DC800D5A146 /* sb_celp.c in Sources */,
+				5AEE4FBA10148DCA00D5A146 /* scal.c in Sources */,
+				5AEE4FBB10148DCB00D5A146 /* smallft.c in Sources */,
+				5AEE4FBC10148DCE00D5A146 /* speex.c in Sources */,
+				5AEE4FC010148DD100D5A146 /* speex_callbacks.c in Sources */,
+				5AEE4FC410148DD700D5A146 /* speex_header.c in Sources */,
+				5AEE4FCB10148DDF00D5A146 /* stereo.c in Sources */,
+				5AEE4FCC10148DE100D5A146 /* vbr.c in Sources */,
+				5AEE4FCD10148DE700D5A146 /* vq.c in Sources */,
+				5AEE4FCE10148DE800D5A146 /* window.c in Sources */,
+				5AEE4FFA10148F7800D5A146 /* twtw-audioconv.c in Sources */,
+				5AEE4FFE10148F8000D5A146 /* twtw-fixedpoint.c in Sources */,
+				5AEE500910148FF700D5A146 /* twtw-curves.c in Sources */,
+				5AEE500B10148FF900D5A146 /* twtw-document.c in Sources */,
+				5AEE500D10148FFB00D5A146 /* twtw-editing.c in Sources */,
+				5AEE50171014907800D5A146 /* twtw-photo.c in Sources */,
+				5AEE501A1014907B00D5A146 /* twtw-graphicscache-apple.m in Sources */,
+				5AEE501F101490A000D5A146 /* twtw-ogg.c in Sources */,
+				5AEE5024101490C300D5A146 /* twtw-filesystem-apple.m in Sources */,
+				5AEE5029101490DD00D5A146 /* twtw_glib_lookalike_mac.m in Sources */,
+				5AEE50F81014993100D5A146 /* mdf.c in Sources */,
+				5AEE50F91014994500D5A146 /* modes_wb.c in Sources */,
+				5A77C86F101F39BC00FEAC55 /* twtw-json.c in Sources */,
+				5A77C871101F39BE00FEAC55 /* twtw-cloud-apple.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8D11072C0486CEB800E47090 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -818,6 +1143,9 @@
 				5A54B2A50F69A15300A2939B /* twtw_glib_lookalike_mac.m in Sources */,
 				5A54B7720F6B2C9300A2939B /* twtw-photo.c in Sources */,
 				5A54B8F90F6D622100A2939B /* TwtwInfoPanelController.m in Sources */,
+				5A77C4BD101BB29D00FEAC55 /* TwtwCloudPanelController.m in Sources */,
+				5A77C4FC101D995C00FEAC55 /* twtw-cloud-apple.m in Sources */,
+				5A77C5B7101E126E00FEAC55 /* twtw-json.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -848,9 +1176,76 @@
 			name = InfoPanel.xib;
 			sourceTree = "<group>";
 		};
+		5A77C4B3101BA7E900FEAC55 /* CloudPanel.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5A77C4B4101BA7EA00FEAC55 /* English */,
+			);
+			name = CloudPanel.xib;
+			sourceTree = "<group>";
+		};
+		5A96131D103B43E200761BF5 /* LoginGAE.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5A77C4B8101BAF7E00FEAC55 /* English */,
+			);
+			name = LoginGAE.xib;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		5AEE4F4F10148AEE00D5A146 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					TARGET_OS_IPHONE,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/speex/speex-include",
+					"$(PROJECT_DIR)/ogg/ogg-include",
+					"$(PROJECT_DIR)/liboggz/include",
+					"/opt/local/include/glib-2.0",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				PRODUCT_NAME = TwtwiPhoneBase;
+				SDKROOT = iphonesimulator3.0;
+			};
+			name = Debug;
+		};
+		5AEE4F5010148AEE00D5A146 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					TARGET_OS_IPHONE,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/speex/speex-include",
+					"$(PROJECT_DIR)/ogg/ogg-include",
+					"$(PROJECT_DIR)/liboggz/include",
+					"/opt/local/include/glib-2.0",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				PRODUCT_NAME = TwtwiPhoneBase;
+				SDKROOT = iphonesimulator3.0;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -943,6 +1338,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5AEE4F5110148B1300D5A146 /* Build configuration list for PBXNativeTarget "TwtwiPhoneBase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AEE4F4F10148AEE00D5A146 /* Debug */,
+				5AEE4F5010148AEE00D5A146 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "TwentyTwenty" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -63,11 +63,17 @@ typedef struct twtwCanvasElementInfo_Cocoa {
     int _audioState;
     
     TwtwCanvasElementInfo _elemInfo;
+    
+    double _zoomFactor;
 }
 
 - (void)reloadDocument;
 
 - (void)audioDidCompleteWithRetainedInfo:(id)info;
 - (void)audioInProgressWithRetainedInfo:(id)info;
+
+- (BOOL)audioIsBusy;
+
+- (CGImageRef)copyActivePageAsCGImage;
 
 @end

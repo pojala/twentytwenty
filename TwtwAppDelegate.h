@@ -23,18 +23,32 @@
 */
 
 #import <Cocoa/Cocoa.h>
+@class TwtwCanvasView;
 
 
 @interface TwtwAppDelegate : NSObject {
     
     IBOutlet NSWindow *_editorWindow;
-
+    IBOutlet TwtwCanvasView *_canvasView;
+    
+    BOOL _docHasChanges;
     NSString *_prevSavePath;
+    
+    NSString *_authToken;
 }
 
 - (IBAction)newDocument:(id)sender;
 - (IBAction)openDocument:(id)sender;
 - (IBAction)saveDocument:(id)sender;
 - (IBAction)saveDocumentAs:(id)sender;
+
+- (IBAction)undo:(id)sender;
+
+- (IBAction)zoomNormalSizeAction:(id)sender;
+- (IBAction)zoom2xAction:(id)sender;
+- (IBAction)zoom1_5xAction:(id)sender;
+- (IBAction)zoom0_75xAction:(id)sender;
+
+- (void)documentWasModified;
 
 @end

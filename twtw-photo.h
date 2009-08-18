@@ -43,7 +43,7 @@
 #ifndef _TWTW_PHOTO_H_
 #define _TWTW_PHOTO_H_
 
-#include <glib.h>
+#include "twtw-glib.h"
 #include <stdint.h>
 #include "twtw-units.h"
 
@@ -81,9 +81,10 @@ typedef struct _TwtwYUVImage {
 #define TWTW_CAM_FOURCC_STR     "UYVY"
 #define TWTW_CAM_FOURCC         MAKE_FOURCC_LE('U', 'Y', 'V', 'Y')
 
-// identifier for the private compressed format used for serialized representation
-#define TWTW_CAM_COMPRESSED_FOURCC_STR      "twYZ"
-#define TWTW_CAM_COMPRESSED_FOURCC          MAKE_FOURCC_LE('t', 'w', 'Y', 'Z')
+// identifier for the private compressed format used for serialized representation.
+// 'twYb' is planar 4:2:0 with packed 5 bits per channel chroma.
+#define TWTW_CAM_COMPRESSED_FOURCC_STR      "twYb"
+#define TWTW_CAM_COMPRESSED_FOURCC          MAKE_FOURCC_LE('t', 'w', 'Y', 'b')
 
 
 
@@ -92,6 +93,8 @@ extern "C" {
 #endif
 
 void twtw_yuv_image_destroy (TwtwYUVImage *image);
+
+TwtwYUVImage *twtw_yuv_image_copy (TwtwYUVImage *image);
 
 // when dstHasAlpha is specified, writes 255 as last element in 32-bit pixel; otherwise writes 24-bit pixels.
 // xstride/ystride arguments can be used to create a downscaled thumbnail

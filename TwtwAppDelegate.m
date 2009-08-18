@@ -23,19 +23,33 @@
 */
 
 #import "TwtwAppDelegate.h"
+#import "TwtwCanvasView.h"
 #import "TwtwInfoPanelController.h"
+#import "TwtwCloudPanelController.h"
 
 #import "twtw-units.h"
 #import "twtw-curves.h"
 #import "twtw-document.h"
+#import "twtw-editing.h"
+#import "twtw-cloud.h"
 
 #include <oggz/oggz.h>
 #include "skeleton.h"
 
 
+static void twtwDocChanged(gint notifID, void *userData)
+{
+    [(id)userData documentWasModified];
+}
+
+
 
 @implementation TwtwAppDelegate
 
+- (void)documentWasModified
+{
+    _docHasChanges = YES;
+}
 
 - (void)_test_oggWrite
 {
@@ -145,8 +159,10 @@
     oggz_close(oggz);
 }
 
+
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
 {
+    // some testing junk
     /*TwtwFixedNum u1b = FIXD_FROM_INT(162);
     TwtwFixedNum u2b = FIXD_FROM_FLOAT(100.17);
     TwtwFixedNum mulb = FIXD_QMUL(u1b, u2b);
@@ -155,12 +171,17 @@
     NSLog(@"  .. ver2: mulf: %.8f, sqrtx: %.8f; second: %8.f", TWTW_UNITS_TO_FLOAT(mulb), TWTW_UNITS_TO_FLOAT(sqrtresb), TWTW_UNITS_TO_FLOAT(sqrtres2b));
     */
     
+    twtw_add_active_document_notif_callback (twtwDocChanged, self);
+    
     // create the initial document
     twtw_active_document ();
     
+    [_editorWindow makeKeyAndOrderFront:self];
+
     [[TwtwInfoPanelController sharedController] showWindow:self];
     
-    [_editorWindow makeKeyAndOrderFront:self];
+    [[TwtwCloudPanelController sharedController] showWindow:self];
+    [[TwtwCloudPanelController sharedController] setCanvasView:_canvasView];    
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -171,18 +192,34 @@
 
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)path
 {
+    if (_docHasChanges) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert addButtonWithTitle:@"Continue"];
+        [alert addButtonWithTitle:@"Cancel"];
+        [alert setMessageText:@"Warning"];
+        [alert setInformativeText:@"The document to be opened will replace the current one. Any unsaved changes will be lost. Are you sure?"];
+        
+        int alertReturn = [alert runModal];
+        [alert release];
+        
+        if (alertReturn != NSAlertFirstButtonReturn)
+            return NO;
+    }
+
+
     const char *utf8Path = [path UTF8String];
-    size_t utf8Len = strlen(utf8Path);
-    
     TwtwBook *book = NULL;
     
-    int result = twtw_book_create_from_path_utf8 (utf8Path, utf8Len, &book);
+    int result = twtw_book_create_from_path_utf8 (utf8Path, strlen(utf8Path), &book);
     if (result == 0) {
         twtw_set_active_document (book);
+        
+        _docHasChanges = NO;
         return YES;
     }
-    
-    return NO;
+    else
+        return NO;
 }
 
 
@@ -204,6 +241,8 @@
         return;
 
     twtw_set_active_document (twtw_book_create ());
+    
+    _docHasChanges = NO;
 }
 
 
@@ -271,6 +310,47 @@
     }
 }
 
+- (IBAction)undo:(id)sender
+{
+    if ([_canvasView audioIsBusy]) {
+        NSLog(@"can't undo while audio is busy");
+    } else {
+        twtw_undo_pop_and_perform ();
+    }
+}
 
+- (IBAction)zoomNormalSizeAction:(id)sender
+{
+    NSSize canvasSize = NSMakeSize(TWTW_CANONICAL_CANVAS_WIDTH, round(TWTW_CANONICAL_CANVAS_WIDTH * 9.0 / 16.0));
+    NSSize windowSize = canvasSize;
+    
+    [_editorWindow setContentSize:windowSize];    
+    //[_canvasView setBoundsSize:canvasSize];
+}
+
+- (IBAction)zoom2xAction:(id)sender
+{
+    NSSize canvasSize = NSMakeSize(TWTW_CANONICAL_CANVAS_WIDTH, round(TWTW_CANONICAL_CANVAS_WIDTH * 9.0 / 16.0));
+    NSSize windowSize = NSMakeSize(canvasSize.width * 2, canvasSize.height * 2);
+    
+    [_editorWindow setContentSize:windowSize];    
+    //[_canvasView setBoundsSize:canvasSize];
+}
+
+- (IBAction)zoom1_5xAction:(id)sender
+{
+    NSSize canvasSize = NSMakeSize(TWTW_CANONICAL_CANVAS_WIDTH, round(TWTW_CANONICAL_CANVAS_WIDTH * 9.0 / 16.0));
+    NSSize windowSize = NSMakeSize(canvasSize.width * 1.5, canvasSize.height * 1.5);
+    
+    [_editorWindow setContentSize:windowSize];    
+}
+
+- (IBAction)zoom0_75xAction:(id)sender
+{
+    NSSize canvasSize = NSMakeSize(TWTW_CANONICAL_CANVAS_WIDTH, round(TWTW_CANONICAL_CANVAS_WIDTH * 9.0 / 16.0));
+    NSSize windowSize = NSMakeSize(canvasSize.width * 0.75, canvasSize.height * 0.75);
+    
+    [_editorWindow setContentSize:windowSize];    
+}
 
 @end

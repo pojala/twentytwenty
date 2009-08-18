@@ -41,6 +41,16 @@
 // deflate is used to compress curve and photo data for the on-disk format
 #include <zlib.h>
 
+
+#ifndef __WIN32__
+#define HAS_SYS_TIME_H 1
+#endif
+
+#if (HAS_SYS_TIME_H)
+#include <sys/time.h>
+#endif
+
+
 gboolean twtw_deflate(unsigned char *srcBuf, size_t srcLen,
                       unsigned char *dstBuf, size_t dstLen,
                            size_t *outCompressedLen);
@@ -51,16 +61,24 @@ gboolean twtw_inflate(unsigned char *srcBuf, size_t srcLen,
 
 
 
-// simple pseudorandom algorithm borrowed from oggz_serialno_new()
-static gint32 serialno_new()
+// simple pseudorandom algorithm borrowed from oggz_serialno_new(),
+// with gettimeofday() use added for better randomness on platforms where it's available
+gint32 twtw_serialno_new()
 {
+#if !defined(HAS_SYS_TIME_H)
     gint32 serialno = time(NULL);
+#else
+    struct timeval tval = { 0, 0 };
+    gettimeofday(&tval, NULL);
+    gint32 serialno = tval.tv_usec + tval.tv_sec;
+#endif
     gint k;
 
     do {
         for (k = 0; k < 3 || serialno == 0; k++)
             serialno = 11117 * serialno + 211231;
-    } while (serialno == -1);
+    } while (serialno == -1 || serialno == 0);
+    
     return serialno;
 }
 
@@ -225,6 +243,8 @@ void twtw_page_destroy (TwtwPage *page)
     if (page->refCount == 0) {        
         twtw_page_clear_all_data (page);
 
+        g_free(page->soundTempPath);
+    
         g_free(page->thumb.rgbPixels);
         g_free(page->thumb.maskPixels);
     
@@ -338,6 +358,51 @@ void twtw_page_delete_curve_at_index (TwtwPage *page, gint index)
     page->thumbIsDirty = TRUE;
 }
 
+TwtwCurveList **twtw_page_copy_all_curves (TwtwPage *page)
+{
+    g_return_val_if_fail (page, NULL);
+    
+    gint count = page->curveCount;
+    if (count == 0) return NULL;
+    
+    TwtwCurveList **array = g_malloc(count * sizeof(gpointer));
+    
+    gint i;
+    for (i = 0; i < count; i++) {
+        array[i] = twtw_curvelist_copy (page->curves[i]);
+    }
+    
+    return array;
+}
+
+void twtw_page_replace_curves_copy (TwtwPage *page, gint count, TwtwCurveList **array)
+{
+    g_free(page->curves);
+    page->curves = NULL;
+    page->curveCount = count;
+    
+    if (count > 0) {
+        page->curves = g_malloc(count * sizeof(gpointer));
+        
+        gint i;
+        for (i = 0; i < count; i++) {
+            page->curves[i] = twtw_curvelist_copy (array[i]);
+        }
+    }
+}
+
+void twtw_destroy_curvelist_array (TwtwCurveListArray *arr)
+{
+    if ( !arr) return;
+    
+    gint i;
+    for (i = 0; i < arr->count; i++) {
+        twtw_curvelist_destroy (arr->array[i]);
+    }
+    
+    g_free (arr);
+}
+
 
 gint twtw_page_get_sound_duration_in_seconds (TwtwPage *page)
 {
@@ -404,6 +469,17 @@ void twtw_page_ui_did_record_pcm_with_file_size (TwtwPage *page, gint fileSize)
     page->speexDataSize = 0;
 }
 
+/*
+// this is called from an undo action
+void twtw_page_ui_set_pcm_path (TwtwPage *page, const char *pcmPath)
+{
+    size_t fileSize = twtw_filesys_get_file_size_utf8 (pcmPath, strlen(pcmPath), NULL);
+    
+    page->soundTempPath = pcmPath;
+        
+    twtw_page_ui_did_record_pcm_with_file_size (page, fileSize);
+}*/
+
 
 void twtw_page_attach_edit_data (TwtwPage *page, gpointer data)
 {
@@ -426,7 +502,8 @@ void twtw_page_set_temp_path_for_pcm_sound (TwtwPage *page, char *path)
     g_return_if_fail (page);
     g_return_if_fail (path);
     
-    page->soundTempPath = path;
+    g_free(page->soundTempPath);
+    page->soundTempPath = g_strdup(path);
 }
 
 const char *twtw_page_get_temp_path_for_pcm_sound_utf8 (TwtwPage *page)
@@ -444,7 +521,7 @@ TwtwYUVImage *twtw_page_get_yuv_photo (TwtwPage *page)
     return page->photoImage;
 }
 
-void twtw_page_copy_yuv_photo (TwtwPage *page, TwtwYUVImage *photo)
+void twtw_page_set_yuv_photo_copy (TwtwPage *page, TwtwYUVImage *photo)
 {
     g_return_if_fail (page);
     
@@ -454,17 +531,7 @@ void twtw_page_copy_yuv_photo (TwtwPage *page, TwtwYUVImage *photo)
     }
         
     if (photo) {
-        TwtwYUVImage *newimg = g_malloc0(sizeof(TwtwYUVImage));
-        newimg->w = photo->w;
-        newimg->h = photo->h;
-        newimg->rowBytes = photo->rowBytes;
-        newimg->pixelFormat = photo->pixelFormat;
-        newimg->buffer = g_malloc(newimg->rowBytes * newimg->h);
-        
-        if (photo->buffer)
-            memcpy(newimg->buffer, photo->buffer, newimg->rowBytes * newimg->h);
-            
-        page->photoImage = newimg;
+        page->photoImage = twtw_yuv_image_copy (photo);
     }
     
     page->thumbIsDirty = TRUE;
@@ -550,8 +617,13 @@ void twtw_page_render_thumb (TwtwPage *page)
         unsigned char *rgbPalette = twtw_default_color_palette_rgb_array (NULL);
         g_return_if_fail(rgbPalette);
         
-        const TwtwFixedNum canvasScaleMul_x = FIXD_QDIV(TWTW_UNITS_FROM_INT(thumb->w), TWTW_CANONICAL_CANVAS_WIDTH_FIXD);
-        const TwtwFixedNum canvasScaleMul_y = FIXD_QDIV(TWTW_UNITS_FROM_INT(thumb->h), TWTW_UNITS_FROM_FLOAT(TWTW_CANONICAL_CANVAS_WIDTH / (16.0 / 9.0)));
+        TwtwFixedNum canvasScaleMul_x = FIXD_QDIV(TWTW_UNITS_FROM_INT(thumb->w), TWTW_CANONICAL_CANVAS_WIDTH_FIXD);
+        TwtwFixedNum canvasScaleMul_y = FIXD_QDIV(TWTW_UNITS_FROM_INT(thumb->h), TWTW_UNITS_FROM_FLOAT(TWTW_CANONICAL_CANVAS_WIDTH / (16.0 / 9.0)));
+        
+        #if !defined(TWTW_CURVESER_IS_IDENTITY)
+        canvasScaleMul_x = FIXD_QMUL(canvasScaleMul_x, TWTW_CURVESER_SCALE_IN);
+        canvasScaleMul_y = FIXD_QMUL(canvasScaleMul_y, TWTW_CURVESER_SCALE_IN);
+        #endif
         
         const int yDispOffset = 40;
         
@@ -744,18 +816,19 @@ gint32 twtw_book_regen_serialno (TwtwBook *book)
         g_free(book->tempDirPath);
     }
     
-    book->serialNo = serialno_new();
+    book->serialNo = twtw_serialno_new();
     
     twtw_filesys_generate_temp_dir_path_for_book (book->serialNo, &(book->tempDirPath), &(book->tempDirPathLen));
     
     int i;
     for (i = 0; i < book->pageCount; i++) {
         char str[64];
-        sprintf(str, "page%02d.wav", i);
+        sprintf(str, "page%03d.wav", i);
         char *path = twtw_filesys_append_path_component (book->tempDirPath, str);
     
-        TwtwPage *page = book->pages[i];
-        twtw_page_set_temp_path_for_pcm_sound (page, path);
+        twtw_page_set_temp_path_for_pcm_sound (book->pages[i], path);
+        
+        g_free(path);
     }
     
     return book->serialNo;
@@ -777,11 +850,52 @@ TwtwPage *twtw_book_get_page (TwtwBook *book, gint index)
     return book->pages[index];
 }
 
+gboolean twtw_book_page_has_content (TwtwBook *book, gint index)
+{
+    TwtwPage *page = twtw_book_get_page (book, index);
+    if ( !page) return FALSE;
+    
+    if (twtw_page_get_curves_count (page) > 0)
+        return TRUE;
+    else if (twtw_page_get_sound_duration_in_seconds (page) > 0)
+        return TRUE;
+    else if (twtw_page_get_yuv_photo (page))
+        return TRUE;
+    else
+        return FALSE;
+}
+
+gint twtw_book_get_index_of_last_page_with_content (TwtwBook *book)
+{
+    g_return_val_if_fail (book, -1);
+    
+    gint index = -1;
+    gint count = book->pageCount;
+    gint i;
+    for (i = 0; i < count; i++) {
+        if (twtw_book_page_has_content (book, i))
+            index = i;
+    }
+    return index;
+}
+
+gint twtw_book_get_total_sound_duration (TwtwBook *book)
+{
+    g_return_val_if_fail (book, 0);
+    
+    gint sum = 0;
+    gint count = book->pageCount;
+    gint i;
+    for (i = 0; i < count; i++) {
+        sum += twtw_page_get_sound_duration_in_seconds (book->pages[i]);
+    }
+    return sum;
+}
 
 const char *twtw_book_get_author (TwtwBook *book)
 {
     g_return_val_if_fail (book, NULL);
-    return book->authorStr;
+    return (book->authorStr) ? book->authorStr : "";
 }
 
 void twtw_book_set_author (TwtwBook *book, const char *str)
@@ -795,7 +909,7 @@ void twtw_book_set_author (TwtwBook *book, const char *str)
 const char *twtw_book_get_title (TwtwBook *book)
 {
     g_return_val_if_fail (book, NULL);
-    return book->titleStr;
+    return (book->titleStr) ? book->titleStr : "";
 }
 
 void twtw_book_set_title (TwtwBook *book, const char *str)
@@ -1159,7 +1273,7 @@ static int readPictureFromOggPacketIntoBook(TwtwBook *book, int pageIndex, ogg_p
             TwtwYUVImage *yuvImage = twtw_yuv_image_create_from_serialized (data, photoSerializedSize, photoWidth, photoHeight, compressedPixelFormat, photoDataOriginalSize);
             
             if (yuvImage) {
-                twtw_page_copy_yuv_photo (page, yuvImage);
+                twtw_page_set_yuv_photo_copy (page, yuvImage);
             }
             twtw_yuv_image_destroy (yuvImage);
             
@@ -1184,7 +1298,7 @@ static int readPictureFromOggPacketIntoBook(TwtwBook *book, int pageIndex, ogg_p
             yuvImage.pixelFormat = photoPixelFormat;
             yuvImage.buffer = infData;
             
-            twtw_page_copy_yuv_photo (page, &yuvImage);
+            twtw_page_set_yuv_photo_copy (page, &yuvImage);
             
             data += photoDataDeflatedSize;
             
@@ -1246,7 +1360,7 @@ static int readSpeexFromOggPacketIntoBook(TwtwBook *book, int pageIndex, ogg_pac
         const char *path = twtw_page_get_temp_path_for_pcm_sound_utf8 (page);
         g_return_val_if_fail (path, OGGZ_STOP_ERR);
         
-        //printf("%s: page %i: initing decode to path '%s'\n", __func__, pageIndex, path);
+        printf("%s: page %i: initing decode to path '%s'\n", __func__, pageIndex, path);
 
         twtw_speex_init_decoding_to_pcm_path_utf8 (path, strlen(path), pSpeexState);
         if (*pSpeexState == NULL) {
@@ -1273,12 +1387,13 @@ static int oggzCbReadPacket_readIntoBook(OGGZ *oggz, ogg_packet *op, long serial
     
     if (op->e_o_s) return 0;
 
-    //printf("%s: %i, packet %i, bytes %i, eos %i\n", __func__, (int)serialno, (int)op->packetno, (int)op->bytes, (int)op->e_o_s);
+    ///printf("%s: %i, packet %i, bytes %i, eos %i\n", __func__, (int)serialno, (int)op->packetno, (int)op->bytes, (int)op->e_o_s);
         
     long i, j;
     for (i = 0; i < fileInfo->docHead.num_pages_in_document; i++) {
         if (serialno == fileInfo->docBone.pic_stream_serials[i]) {
             // this is a picture stream; find the pertinent picture header
+            ///printf("got picture stream with serial %ld\n", serialno);
             TwtwPictureHeadPacket *picHead = NULL;
             for (j = 0; j < fileInfo->streamCount; j++) {
                 if (fileInfo->streamInfos[j].serialno == serialno)
@@ -1291,6 +1406,7 @@ static int oggzCbReadPacket_readIntoBook(OGGZ *oggz, ogg_packet *op, long serial
         }
         else if (serialno == fileInfo->docBone.speex_stream_serials[i]) {
             // this is a speex stream; find the pertinent picture header
+            ///printf("got speex stream with serial %ld\n", serialno);
             SpeexHeader *speexHead = NULL;
             TwtwSpeexStatePtr *pSpeexState = NULL;
             for (j = 0; j < fileInfo->streamCount; j++) {
@@ -1331,7 +1447,14 @@ gint twtw_book_create_from_path_utf8 (const char *path, size_t pathLen, TwtwBook
     TwtwOggFileInfo *fileInfo = g_malloc0(sizeof(TwtwOggFileInfo));
     
     oggz_set_read_callback(oggz, -1, (OggzReadPacket)oggzCbReadPacket_countStreamBOS, fileInfo);
-    
+
+    char dummy1[16];
+    char dummy2[16];
+    char dummy3[16];
+    memset(dummy1, 0, 16);
+    memset(dummy2, 0, 16);
+    memset(dummy3, 0, 16);
+        
     gint n;
     do {
         n = oggz_read(oggz, 64);
@@ -1346,15 +1469,6 @@ gint twtw_book_create_from_path_utf8 (const char *path, size_t pathLen, TwtwBook
         retval = TWTW_INVALIDFORMATERR;
         goto bail;
     }
-    
-    char dummy1[16];
-    memset(dummy1, 0, 16);
-
-    char dummy2[16];
-    memset(dummy2, 0, 16);
-    
-    char dummy3[16];
-    memset(dummy3, 0, 16);
     
     // read until the document body is found
     oggz_set_read_callback(oggz, -1, (OggzReadPacket)oggzCbReadPacket_findDocumentBone, fileInfo);
@@ -1716,11 +1830,13 @@ gint twtw_book_write_to_path_utf8 (TwtwBook *book, const char *path, size_t path
         }
 
         char *creatorID =
-#if defined(__APPLE__)
+#if defined(__MACOSX__)
                 "20:20_MacOSX";
+#elif defined(__APPLE__)
+                "20:20_Apple";
 #elif defined(MAEMO)
                 "20:20_Maemo";
-#elif defined(__WIN32__) || defined(WIN32)
+#elif defined(__WIN32__)
                 "20:20_Windows";
 #else
                 "20:20";
@@ -2006,4 +2122,52 @@ gboolean twtw_inflate(unsigned char *srcBuf, size_t srcLen,
 }
 
 
+
+gint twtw_book_create_from_data (const char *data, size_t dataLen, TwtwBook **outBook)
+{
+    char *tempPath = NULL;
+    size_t tempPathLen = 0;
+    twtw_filesys_generate_temp_path_for_single_file (&tempPath, &tempPathLen);    
+    g_return_val_if_fail(tempPath && tempPathLen > 0, TWTW_PARAMERR);
+    
+    FILE *file = twtw_open_writeb_utf8 (tempPath, tempPathLen);
+    fwrite(data, dataLen, 1, file);
+    fclose(file);
+    file = NULL;
+    
+    gint result = twtw_book_create_from_path_utf8 (tempPath, tempPathLen, outBook);
+    
+    twtw_filesys_clean_temp_files_at_path (tempPath, tempPathLen);
+    
+    return result;
+}
+
+
+gint twtw_book_write_to_data (TwtwBook *book, char **outData, size_t *outDataLen)
+{
+    char *tempPath = NULL;
+    size_t tempPathLen = 0;
+    twtw_filesys_generate_temp_path_for_single_file (&tempPath, &tempPathLen);    
+    g_return_val_if_fail(tempPath && tempPathLen > 0, TWTW_PARAMERR);
+
+    gint result = twtw_book_write_to_path_utf8 (book, tempPath, tempPathLen);
+    size_t size = 0;
+    char *data = NULL;
+    
+    if (result == 0) {
+        size = twtw_filesys_get_file_size_utf8 (tempPath, tempPathLen, NULL);
+        data = g_malloc(size);
+        
+        FILE *file = twtw_open_readb_utf8 (tempPath, tempPathLen);
+        
+        fread(data, size, 1, file);
+        fclose(file);
+    }
+    
+    twtw_filesys_clean_temp_files_at_path (tempPath, tempPathLen);
+    
+    *outData = data;
+    *outDataLen = size;
+    return result;
+}
 

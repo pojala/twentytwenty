@@ -24,8 +24,12 @@
 */
 
 #include "twtw-graphicscache.h"
+#include "twtw-graphicscache-priv.h"
+#include <Foundation/Foundation.h>
 
-
+#if !defined(__MACOSX__)
+#include <CoreGraphics/CoreGraphics.h>
+#endif
 
 
 struct _TwtwCacheSurface {
@@ -56,8 +60,10 @@ static void recreateCGBitmapContext(TwtwCacheSurface *surf, int w, int h)
     surf->rowBytes = w * 4;
     surf->frameBuf = (w > 0 && h > 0) ? g_malloc(surf->rowBytes * h) : NULL;
 
-    if (w < 1 || h < 1)
+    if (w < 1 || h < 1) {
+        printf("*** %s: unable to create surface with zero size", __func__);
         return;
+    }
 
     CGColorSpaceRef cspace = CGColorSpaceCreateDeviceRGB();
     
@@ -68,13 +74,18 @@ static void recreateCGBitmapContext(TwtwCacheSurface *surf, int w, int h)
                                                    kCGImageAlphaPremultipliedLast);
     CGColorSpaceRelease(cspace);
     
-    CGContextClearRect(surf->cgContext, CGRectMake(0, 0, w, h));
+    if ( !surf->cgContext) {
+        NSLog(@"*** %s: unable to create cgsurface (%i * %i)", __func__, w, h);
+    } else {
+        CGContextClearRect(surf->cgContext, CGRectMake(0, 0, w, h));
+    }
 }
 
 
 void twtw_set_size_for_shared_canvas_cache_surface (gint w, gint h)
 {
     if (w != g_mainCanvas.w || h != g_mainCanvas.h) {
+        NSLog(@"recreating shared canvas surface with size %i * %i", w, h);
         recreateCGBitmapContext(&g_mainCanvas, w, h);
     }
 }

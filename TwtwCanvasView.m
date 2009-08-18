@@ -27,12 +27,10 @@
 #import "twtw-editing.h"
 #import "twtw-document.h"
 #import "twtw-graphicscache.h"
+#import "twtw-graphicscache-priv.h"
 #import "twtw-audio.h"
 #import "twtw-filesystem.h"
 
-
-// private function for setting the canvas surface's size
-extern void twtw_set_size_for_shared_canvas_cache_surface (gint w, gint h);
 
 // private function for notifying page about new audio recording
 extern void twtw_page_ui_did_record_pcm_with_file_size (TwtwPage *page, gint fileSize);
@@ -109,6 +107,21 @@ static void twtwDocChanged(gint notifID, void *userData)
     return self;
 }
 
+- (void)resizeWithOldSuperviewSize:(NSSize)oldBoundsSize
+{
+    [super resizeWithOldSuperviewSize:oldBoundsSize];
+    
+    NSSize canvasSize = NSMakeSize(TWTW_CANONICAL_CANVAS_WIDTH, round(TWTW_CANONICAL_CANVAS_WIDTH * 9.0 / 16.0));
+    NSSize frameSize = [self frame].size;
+    
+    [self setBoundsSize:canvasSize];
+    
+    _zoomFactor = (double)frameSize.width / canvasSize.width;
+    
+    twtw_set_size_for_shared_canvas_cache_surface (round(frameSize.width), round(frameSize.height));
+    _bgCacheIsDirty = YES;
+}
+
 
 //- (BOOL)isFlipped {
 //    return YES; }
@@ -122,6 +135,7 @@ static void twtwDocChanged(gint notifID, void *userData)
 
 - (void)_notifyOfUpdate
 {
+    //twtw_notify_about_doc_change (TWTW_NOTIF_DOCUMENT_MODIFIED);
     [[TwtwInfoPanelController sharedController] updateInfo];
 }
 
@@ -183,9 +197,16 @@ static void twtwDocChanged(gint notifID, void *userData)
     }
 
     TwtwPage *page = twtw_active_document_page ();
+    gint pageIndex = twtw_active_document_page_index ();
     const char *path = twtw_page_get_temp_path_for_pcm_sound_utf8 (page);
-    
     NSAssert(path && strlen(path) > 0, @"path is null");
+
+    // make a copy of previous audio and push it on the undo stack
+    char *copiedAudioPath = NULL;
+    twtw_filesys_make_uniquely_named_copy_of_file_at_path (path, strlen(path), &copiedAudioPath, NULL);
+    TwtwAction undoAction = { TWTW_ACTION_SET_PCM_SOUND, pageIndex, NULL,  copiedAudioPath, NULL };
+    twtw_undo_push_action (&undoAction);
+    
     
     NSLog(@"starting audio recording, temp path is:\n    %s", path);
     
@@ -212,6 +233,9 @@ static void twtwDocChanged(gint notifID, void *userData)
     TwtwPage *page = twtw_active_document_page ();
     const char *path = twtw_page_get_temp_path_for_pcm_sound_utf8 (page);
 
+    if ( !path || strlen(path) < 1)
+        return;
+
     TwtwAudioCallbacks callbacks;
     callbacks.audioCompletedFunc = myAudioCompletedCallback;
     callbacks.audioInProgressFunc = myAudioInProgressCallback;
@@ -221,6 +245,11 @@ static void twtwDocChanged(gint notifID, void *userData)
         
         NSLog(@"now playing PCM sound, temp path is:\n    %s", __func__, path);
     }
+}
+
+- (BOOL)audioIsBusy
+{
+    return (_audioState != 0) ? YES : NO;
 }
 
 
@@ -254,7 +283,7 @@ static void twtwDocChanged(gint notifID, void *userData)
     {
         double srcW = [im size].width;
         double srcH = [im size].height;
-        double srcAsp = srcW / srcH;
+        double srcAsp = (double)srcW / srcH;
         double dstAsp = (double)w / h;
         NSRect srcRect;
         
@@ -275,8 +304,8 @@ static void twtwDocChanged(gint notifID, void *userData)
               
         // the bottom of the image currently gets cropped by the UI, so we can paint it with a solid color.
         // this is just a quick hack.
-        [[NSColor colorWithDeviceRed:0.6 green:0.6 blue:0.6 alpha:1.0] set];
-        [[NSBezierPath bezierPathWithRect:NSMakeRect(0, 0,  w, 0.13*h)] fill];
+        [[NSColor colorWithDeviceRed:1.0 green:1.0 blue:1.0 alpha:1.0] set];
+        [[NSBezierPath bezierPathWithRect:NSMakeRect(0, 0,  w, 0.1*h)] fill];
     }
     [NSGraphicsContext setCurrentContext:prevCtx];
     
@@ -285,7 +314,13 @@ static void twtwDocChanged(gint notifID, void *userData)
     TwtwYUVImage *yuvImage = twtw_yuv_image_create_from_rgb_with_default_size (bitmapData, rowBytes, TRUE);
 
     TwtwPage *page = twtw_active_document_page ();
-    twtw_page_copy_yuv_photo (page, yuvImage);
+    gint pageIndex = twtw_active_document_page_index ();
+    
+    TwtwYUVImage *prevValue = twtw_yuv_image_copy (twtw_page_get_yuv_photo (page));
+    TwtwAction undoAction = { TWTW_ACTION_SET_BG_PHOTO, pageIndex, NULL,  prevValue, (TwtwActionDestructorFuncPtr)twtw_yuv_image_destroy };
+    twtw_undo_push_action (&undoAction);
+    
+    twtw_page_set_yuv_photo_copy (page, yuvImage);
 
     // done, clean up
     twtw_yuv_image_destroy(yuvImage);    
@@ -322,7 +357,7 @@ static void twtwDocChanged(gint notifID, void *userData)
 }
 
 
-#pragma mark --- events & drawing ---
+#pragma mark --- events ---
 
 - (void)moveToPreviousPageAction:(id)sender
 {
@@ -347,7 +382,6 @@ static void twtwDocChanged(gint notifID, void *userData)
     [alert addButtonWithTitle:@"OK"];
     [alert setMessageText:@"Feature not available"];
     [alert setInformativeText:@"Sorry, direct email functionality is not currently implemented in this desktop version of 20:20. To save the document, choose Save from the File menu."];
-
     [alert runModal];
     [alert release];        
     
@@ -393,7 +427,8 @@ static int colorIDFromPointInPencilsBox(int x, int y)
     if (NSMouseInRect(pos, _elemInfo.pencilsRect, NO)) {
         int x = round(pos.x - _elemInfo.pencilsRect.origin.x);
         int y = round(pos.y - _elemInfo.pencilsRect.origin.y);
-        y = _elemInfo.pencilsRect.size.height - y;
+        
+        y = _elemInfo.pencilsRect.size.height - y;  // flip Y
         int colorID = colorIDFromPointInPencilsBox(x, y);
         
         twtw_set_default_color_index (colorID);
@@ -424,7 +459,8 @@ static int colorIDFromPointInPencilsBox(int x, int y)
         return;
     }
     
-    // view origin is bottom-left, so must flip Y for curves
+    // not on a button, so start drawing a curve.
+    // view origin is bottom-left, so must flip Y for curves.
     pos.y = bounds.size.height - 1 - pos.y;
 
     TwtwCurveList *newCL = twtw_editing_curvelist_create_with_start_cursor_point (TwtwMakeFloatPoint(pos.x, pos.y));
@@ -449,7 +485,12 @@ static int colorIDFromPointInPencilsBox(int x, int y)
     
     // add created curve to active document
     TwtwPage *page = twtw_active_document_page ();
+    gint pageIndex = twtw_active_document_page_index ();
+    
     twtw_page_add_curve (page, newCL);
+    
+    TwtwAction undoAction = { TWTW_ACTION_DELETE_LAST_CURVE, pageIndex, NULL,  NULL, NULL };
+    twtw_undo_push_action (&undoAction);
     
     _editedCL = nil;
     twtw_curvelist_destroy (newCL);
@@ -459,6 +500,9 @@ static int colorIDFromPointInPencilsBox(int x, int y)
     [self _notifyOfUpdate];
 }
 
+
+#pragma mark --- drawing ---
+
 static void drawCurveList(CGContextRef ctx, TwtwCurveList *curve)
 {
     int segCount = twtw_curvelist_get_segment_count (curve);
@@ -466,8 +510,8 @@ static void drawCurveList(CGContextRef ctx, TwtwCurveList *curve)
 
     unsigned char *rgbPalette = twtw_default_color_palette_rgb_array (NULL);
     float *paletteLineWeights = twtw_default_color_palette_line_weight_array (NULL);
-    g_return_if_fail(rgbPalette);
-    g_return_if_fail(paletteLineWeights);
+    NSCAssert(rgbPalette, @"palette missing");
+    NSCAssert(paletteLineWeights, @"line weights missing");
 
     const int colorID = twtw_curvelist_get_color_id (curve);
     float lineWMul = (paletteLineWeights[colorID] > 0.0f) ? paletteLineWeights[colorID] : 1.0;
@@ -634,7 +678,7 @@ static void drawBackgroundPhotoFromPage(CGContextRef ctx, TwtwPage *page, int w,
     free(bitmapData);
 }
 
-static void drawActivePageInCache()
+static void drawActivePageInCache(double zoomFactor)
 {
     TwtwPage *page = twtw_active_document_page ();
     TwtwCacheSurface *surf = twtw_shared_canvas_cache_surface();
@@ -642,25 +686,46 @@ static void drawActivePageInCache()
     int w = twtw_cache_surface_get_width(surf);
     int h = twtw_cache_surface_get_height(surf);
     
+    if (zoomFactor <= 0.0) zoomFactor = 1.0;
+    
     twtw_cache_surface_clear_rect (surf, 0, 0, w, h);
     
     {
     CGContextRef cacheCtx = (CGContextRef) twtw_cache_surface_begin_drawing (surf);
-
+        
         drawBackgroundPhotoFromPage(cacheCtx, page, w, h);
 
+        // reset the stroke color space to RGB before drawing curves
         CGColorSpaceRef cspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
         CGContextSetStrokeColorSpace(cacheCtx, cspace);
         CGColorSpaceRelease(cspace);
+
+        CGContextSaveGState(cacheCtx);
+        if (zoomFactor != 1.0)
+            CGContextScaleCTM(cacheCtx, zoomFactor, zoomFactor);
 
         int curveCount = twtw_page_get_curves_count (page);
         int i;
         for (i = 0; i < curveCount; i++) {
             drawCurveList(cacheCtx, twtw_page_get_curve(page, i));
         }
+        
+        CGContextRestoreGState(cacheCtx);
 
     twtw_cache_surface_end_drawing (surf);
     }
+}
+
+- (CGImageRef)copyActivePageAsCGImage
+{
+    TwtwCacheSurface *surf = twtw_shared_canvas_cache_surface();
+    CGContextRef cacheCtx = (CGContextRef) twtw_cache_surface_begin_drawing (surf);
+    
+    CGImageRef cgImage = CGBitmapContextCreateImage(cacheCtx);
+
+    twtw_cache_surface_end_drawing (surf);
+    
+    return cgImage;
 }
 
 
@@ -679,7 +744,7 @@ static void drawActivePageInCache()
     NSRectFill(rect);
     
     if (_bgCacheIsDirty) {
-        drawActivePageInCache();
+        drawActivePageInCache(_zoomFactor);
         _bgCacheIsDirty = NO;
     }
     
@@ -704,7 +769,7 @@ static void drawActivePageInCache()
         drawCurveList(cgCtx, _editedCL);
     }
 
-    // draw canvas borders
+    // --- draw canvas borders ---
     {    
     // draw around canvas
     [[NSColor colorWithDeviceRed:0.92 green:0.92 blue:0.92 alpha:1.0] set];
@@ -726,6 +791,7 @@ static void drawActivePageInCache()
     CGContextRestoreGState(cgCtx);
     
     
+    // --- draw overlay graphics ---
     {
     NSSize imSize = [_im_pens size];
     double penboxXMargin = 12;
@@ -780,7 +846,8 @@ static void drawActivePageInCache()
                 ];
     x += imSize.width;
     
-    // two stacks of papers
+    
+    // -- two stacks of papers --
     int currentPage = twtw_active_document_page_index();
     imSize = [_im_leaf size];
     int i;
@@ -831,7 +898,7 @@ static void drawActivePageInCache()
                 ];
     }
 
-    // draw time markers
+    // -- draw time markers --
     {
     NSRect markerRect = NSMakeRect(bounds.origin.x + bounds.size.width - 20,
                                    bounds.origin.y + 60,

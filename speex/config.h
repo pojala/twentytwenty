@@ -7,6 +7,15 @@
 /* Make use of ARM5E assembly optimizations */
 /* #undef ARM5E_ASM */
 
+#if defined(__APPLE__) && (TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
+//#define ARM5E_ASM 1
+//#define FIXED_POINT 1
+// ^^ ARM5e opts don't compile on iPhone GCC (inline asm format is incorrect?)
+#define FLOATING_POINT 1
+#else
+#define FLOATING_POINT 1
+#endif
+
 /* Make use of Blackfin assembly optimizations */
 /* #undef BFIN_ASM */
 
@@ -27,9 +36,6 @@
 
 /* Compile as fixed-point */
 /* #undef FIXED_POINT */
-
-/* Compile as floating-point */
-#define FLOATING_POINT 
 
 /* Define to 1 if you have the <alloca.h> header file. */
 #define HAVE_ALLOCA_H 1
@@ -150,7 +156,7 @@
 /* #undef WORDS_BIGENDIAN */
 
 /* Enable SSE support */
-#if defined(__X86__) || (defined(__APPLE__) && !defined(__BIG_ENDIAN__))
+#if defined(__X86__) || (defined(__APPLE__) && defined(__MACOSX__) && !defined(__BIG_ENDIAN__))
 #define _USE_SSE 
 #endif
 

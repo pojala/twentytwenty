@@ -115,7 +115,7 @@ TwtwFixedNum twtw_fixed_sqrt(TwtwFixedNum x)
     if (x > fxd255 || x < FIXD_ONE) {
         // count high zero bits (i.e. find highest bit != 0)
         int bit;
-#if __arm__
+#if defined(__armv5te__)
         __asm__("clz  %0, %1 \n"
                 "rsb  %0, %0, #31 \n"
                     : "=r"(bit)
